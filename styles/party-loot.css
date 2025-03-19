@@ -1,0 +1,606 @@
+/* Party Loot Module Styles */
+
+/* Common Styles */
+.party-loot-container {
+  font-family: "Roboto", "Signika", sans-serif;
+}
+
+.party-loot-container button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.party-loot-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Currency Colors */
+.platinum,
+.plat {
+  color: #8b8b8b;
+}
+
+.gold {
+  color: #ffd700;
+}
+
+.silver {
+  color: #f0f0f0;
+}
+
+.copper {
+  color: #cd7f32;
+}
+
+/* Fund Panel Styles */
+.funds-overview {
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 15px;
+}
+
+.currency-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.currency {
+  font-size: 1.2em;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.currency i {
+  font-size: 1.5em;
+}
+
+.fund-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.add-fund-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.subtract-fund-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+/* Fund History Table */
+.fund-history {
+  margin-top: 20px;
+}
+
+.fund-history h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.view-history-btn {
+  font-size: 0.8em;
+  background: #607d8b;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.fund-history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fund-history-table th,
+.fund-history-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fund-history-table tr.add {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.fund-history-table tr.subtract {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.currency-cell span {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.delete-fund-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.page-prev,
+.page-next {
+  background: #607d8b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.page-prev:disabled,
+.page-next:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-size: 0.9em;
+}
+
+/* Fund Form */
+.fund-form {
+  padding: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group.required label::after {
+  content: " *";
+  color: red;
+}
+
+.currency-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Item Panel Styles */
+.items-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-filter {
+  display: flex;
+  gap: 10px;
+  flex-grow: 1;
+  max-width: 70%;
+}
+
+.search-filter input,
+.search-filter select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-filter input {
+  flex-grow: 1;
+}
+
+.add-item-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+/* Items Table */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.items-table th,
+.items-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.item-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.item-name i {
+  font-size: 1.2em;
+}
+
+.item-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.view-item-btn {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.edit-item-btn {
+  background: #ffc107;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.delete-item-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Item Form */
+.item-form {
+  padding: 10px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.advanced-properties {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.value-input-group {
+  display: flex;
+  gap: 5px;
+}
+
+.value-input-group input {
+  flex: 2;
+}
+
+.value-input-group select {
+  flex: 1;
+}
+
+/* Item Details */
+.item-details-container {
+  padding: 10px;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.item-icon {
+  font-size: 2em;
+}
+
+.item-rarity {
+  font-size: 0.9em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  margin-left: auto;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.info-label {
+  font-weight: bold;
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.info-value {
+  flex-grow: 1;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tag {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.9em;
+}
+
+.description {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.description p {
+  margin-bottom: 10px;
+}
+
+.item-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modal and Dialog Styles */
+.party-loot-modal {
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background: var(--color-bg-secondary, #2c2c34);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  width: 95%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  color: var(--color-text-dark-inactive, #858585);
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: var(--color-text-light-highlight, #f0f0f0);
+}
+
+.modal-content {
+  padding: 15px;
+}
+
+.modal-footer {
+  padding: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Confirmation Dialog */
+.confirm-dialog {
+  background: var(--color-bg-secondary, #2c2c34);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  width: 95%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.confirm-message {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Notifications */
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--color-bg-secondary, #2c2c34);
+  border-left: 4px solid;
+  padding: 10px 15px;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+  max-width: 300px;
+}
+
+.notification.success {
+  border-left-color: #4caf50;
+}
+
+.notification.error {
+  border-left-color: #f44336;
+}
+
+.notification.info {
+  border-left-color: #2196f3;
+}
+
+.notification.warning {
+  border-left-color: #ff9800;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .currency-display {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .currency {
+    width: 100%;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-filter {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .items-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .add-item-btn {
+    width: 100%;
+  }
+
+  .modal-container {
+    width: 95%;
+  }
+}
+
+/* Dark mode compatibility */
+.party-loot-container.dark-mode {
+  --text-light: #f0f0f0;
+  --text-dark: #333;
+  --bg-light: #444;
+  --bg-dark: #222;
+  --border-light: rgba(255, 255, 255, 0.1);
+
+  color: var(--text-light);
+}
+
+.party-loot-container.dark-mode input,
+.party-loot-container.dark-mode select,
+.party-loot-container.dark-mode textarea {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  border-color: var(--border-light);
+}
+
+/* Tooltip styles */
+.party-loot-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  z-index: 1002;
+  pointer-events: none;
+  max-width: 250px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.party-loot-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+}

@@ -1,0 +1,78 @@
+<form>
+  <div class="party-loot-container">
+    <div class="funds-overview">
+      <h2>Current Funds</h2>
+      <div class="currency-display">
+        <div class="currency platinum">
+          <i class="fas fa-diamond plat"></i>
+          <span>Platinum: {{funds.platinum}}</span>
+        </div>
+        <div class="currency gold">
+          <i class="fas fa-diamond gold"></i>
+          <span>Gold: {{funds.gold}}</span>
+        </div>
+        <div class="currency silver">
+          <i class="fas fa-diamond silver"></i>
+          <span>Silver: {{funds.silver}}</span>
+        </div>
+        <div class="currency copper">
+          <i class="fas fa-diamond copper"></i>
+          <span>Copper: {{funds.copper}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fund-actions">
+      <button type="button" class="add-fund-btn">
+        <i class="fas fa-plus"></i> Add Funds
+      </button>
+      <button type="button" class="subtract-fund-btn">
+        <i class="fas fa-minus"></i> Subtract Funds
+      </button>
+    </div>
+
+    <div class="fund-history">
+      <h3>
+        Recent Transactions
+        <button type="button" class="view-history-btn">View All</button>
+      </h3>
+      <table class="fund-history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each fundHistory}}
+          <tr class="{{#if this.subtract}}subtract{{else}}add{{/if}}">
+            <td>{{this.date}}</td>
+            <td>{{this.description}}</td>
+            <td class="currency-cell">
+              {{#if this.platinum}}<span class="platinum"
+                >{{this.platinum}}P</span
+              >{{/if}} {{#if this.gold}}<span class="gold">{{this.gold}}G</span
+              >{{/if}} {{#if this.silver}}<span class="silver"
+                >{{this.silver}}S</span
+              >{{/if}} {{#if this.copper}}<span class="copper"
+                >{{this.copper}}C</span
+              >{{/if}}
+            </td>
+            <td>
+              <button
+                type="button"
+                class="delete-fund-btn"
+                data-id="{{this.id}}"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>

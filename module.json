@@ -1,0 +1,16 @@
+{
+  "name": "party-loot",
+  "title": "Party Loot",
+  "description": "Track party funds and items for your campaign.",
+  "version": "1.0.0",
+  "author": "JBartholomew",
+  "minimumCoreVersion": "0.8.0",
+  "compatibleCoreVersion": "9",
+  "scripts": ["scripts/party-loot.js"],
+  "esmodules": ["scripts/party-loot.js"],
+  "styles": ["styles/party-loot.css"],
+  "packs": [],
+  "url": "https://github.com/yourusername/party-loot",
+  "manifest": "https://raw.githubusercontent.com/yourusername/party-loot/main/module.json",
+  "download": "https://github.com/yourusername/party-loot/archive/v1.0.0.zip"
+}

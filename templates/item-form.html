@@ -1,0 +1,77 @@
+<form class="item-form">
+    <div class="form-group required">
+      <label for="name">Item Name:</label>
+      <input type="text" name="name" value="{{item.name}}" required>
+    </div>
+    
+    <div class="form-group required">
+      <label for="owner">Owner:</label>
+      <input type="text" name="owner" value="{{item.owner}}" required>
+    </div>
+    
+    <div class="form-group required">
+      <label for="source">Source:</label>
+      <input type="text" name="source" value="{{item.source}}" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="quantity">Quantity:</label>
+      <input type="number" name="quantity" value="{{#if item.quantity}}{{item.quantity}}{{else}}1{{/if}}" min="1">
+    </div>
+    
+    <details {{#if item.description}}open{{/if}}>
+      <summary>Advanced Properties</summary>
+      <div class="advanced-properties">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="item_type_id">Item Type:</label>
+            <select name="item_type_id">
+              <option value="">Select Type</option>
+              {{#each itemTypes}}
+              <option value="{{this.id}}" {{#if (eq ../item.itemType this.name)}}selected{{/if}}>
+                {{this.name}}
+              </option>
+              {{/each}}
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="item_rarity_id">Rarity:</label>
+            <select name="item_rarity_id">
+              <option value="">Select Rarity</option>
+              {{#each itemRarities}}
+              <option value="{{this.id}}" style="color: {{this.colorCode}}" {{#if (eq ../item.rarity this.name)}}selected{{/if}}>
+                {{this.name}}
+              </option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="value">Value:</label>
+            <div class="value-input-group">
+              <input type="number" name="value" value="{{item.value}}" min="0">
+              <select name="value_type_id">
+                <option value="2" {{#if (eq item.valueType "gp")}}selected{{/if}}>Gold</option>
+                <option value="3" {{#if (eq item.valueType "sp")}}selected{{/if}}>Silver</option>
+                <option value="4" {{#if (eq item.valueType "cp")}}selected{{/if}}>Copper</option>
+                <option value="1" {{#if (eq item.valueType "pp")}}selected{{/if}}>Platinum</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="tags">Tags:</label>
+            <input type="text" name="tags" value="{{item.tags}}" placeholder="comma,separated,tags">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea name="description" rows="4">{{item.description}}</textarea>
+        </div>
+      </div>
+    </details>
+  </form>
