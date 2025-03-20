@@ -21,7 +21,7 @@ A Foundry VTT module to track party funds and items for your roleplaying games.
 
 ### Method 2: Manual Installation
 
-1. Download the [latest release](https://github.com/yourusername/party-loot/releases/latest)
+1. Download the [latest release]([https://github.com/yourusername/party-loot/releases/latest](https://github.com/jonathanbartholomew/party-loot-vtt/releases/tag/v1.0.0))
 2. Extract the zip file to your Foundry VTT `Data/modules/` folder
 3. Restart Foundry VTT
 
