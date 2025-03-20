@@ -1,16 +1,34 @@
 {
   "name": "party-loot",
   "title": "Party Loot",
-  "description": "Track party funds and items for your campaign.",
+  "description": "Track party funds and items for your campaign with a comprehensive inventory and currency management system.",
   "version": "1.0.0",
   "author": "JBartholomew",
   "minimumCoreVersion": "0.8.0",
-  "compatibleCoreVersion": "9",
-  "scripts": ["scripts/party-loot.js"],
+  "compatibleCoreVersion": "11",
   "esmodules": ["scripts/party-loot.js"],
   "styles": ["styles/party-loot.css"],
   "packs": [],
-  "url": "https://github.com/yourusername/party-loot",
-  "manifest": "https://raw.githubusercontent.com/yourusername/party-loot/main/module.json",
-  "download": "https://github.com/yourusername/party-loot/archive/v1.0.0.zip"
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ],
+  "dependencies": [],
+  "socket": false,
+  "url": "https://github.com/jonathanbartholomew/party-loot-vtt",
+  "manifest": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/module.json",
+  "download": "https://github.com/jonathanbartholomew/party-loot-vtt/archive/refs/tags/v1.0.0.zip",
+  "media": [
+    {
+      "type": "icon",
+      "url": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/icon.png"
+    },
+    {
+      "type": "cover",
+      "url": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/cover.jpg"
+    }
+  ]
 }
