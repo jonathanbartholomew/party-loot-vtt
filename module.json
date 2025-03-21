@@ -21,7 +21,7 @@
   "socket": false,
   "url": "https://github.com/jonathanbartholomew/party-loot-vtt",
   "manifest": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/module.json",
-  "download": "https://github.com/jonathanbartholomew/party-loot-vtt/main/",
+  "download": "https://github.com/jonathanbartholomew/party-loot-vtt/archive/main.zip",
   "media": [
     {
       "type": "icon",
