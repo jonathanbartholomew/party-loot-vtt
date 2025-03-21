@@ -1,12 +1,14 @@
 export class PartyLootAPI {
   constructor() {
     this.baseUrl = game.settings.get("party-loot", "apiUrl");
-    this.token = game.settings.get("party-loot", "apiToken");
+    this.apiToken = game.settings.get("party-loot", "apiToken");
+    this.authToken = null; // Will hold the JWT from the server
     this.authenticated = false;
+    this.campaignId = game.settings.get("party-loot", "campaignId");
   }
 
   async authenticate() {
-    if (!this.token) return false;
+    if (!this.apiToken) return false;
 
     try {
       const response = await fetch(`${this.baseUrl}/foundry/authenticate`, {
@@ -14,7 +16,7 @@ export class PartyLootAPI {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ apiToken: this.token }),
+        body: JSON.stringify({ apiToken: this.apiToken }),
       });
 
       if (!response.ok) {
@@ -30,10 +32,16 @@ export class PartyLootAPI {
 
       const data = await response.json();
 
+      // Save the JWT auth token for future API calls
+      this.authToken = data.token;
+
       // Save the user details to settings
       game.settings.set("party-loot", "userId", data.userId);
       game.settings.set("party-loot", "userGroupId", data.userGroupId);
       game.settings.set("party-loot", "campaignId", data.campaignId);
+
+      // Update the local campaignId property
+      this.campaignId = data.campaignId;
 
       console.log(
         "Party Loot | Authentication successful for user:",
@@ -49,8 +57,18 @@ export class PartyLootAPI {
   }
 
   async refreshToken() {
-    this.token = game.settings.get("party-loot", "apiToken");
-    return this.token && (await this.authenticate());
+    this.apiToken = game.settings.get("party-loot", "apiToken");
+    this.campaignId = game.settings.get("party-loot", "campaignId");
+
+    if (!this.apiToken) return false;
+
+    // If we already have an auth token, try to use it first
+    if (this.authToken) {
+      return true;
+    }
+
+    // Otherwise re-authenticate
+    return await this.authenticate();
   }
 
   async fetchFunds() {
@@ -61,14 +79,13 @@ export class PartyLootAPI {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.authToken}`,
         },
       });
 
       if (!response.ok) throw new Error("Failed to fetch funds data");
 
       const data = await response.json();
-      console.log("Party Loot | Funds data received:", data);
       return data.length > 0 ? data[0] : null;
     } catch (error) {
       console.error("Party Loot | API Error:", error);
@@ -85,14 +102,13 @@ export class PartyLootAPI {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.authToken}`,
         },
       });
 
       if (!response.ok) throw new Error("Failed to fetch fund history");
 
       const data = await response.json();
-      console.log("Party Loot | Fund history received:", data);
       return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error("Party Loot | API Error:", error);
@@ -101,31 +117,6 @@ export class PartyLootAPI {
     }
   }
 
-  async fetchItems() {
-    if (!(await this.refreshToken())) return [];
-
-    try {
-      const response = await fetch(`${this.baseUrl}/items`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch items");
-
-      const data = await response.json();
-      console.log("Party Loot | Items received:", data);
-      return Array.isArray(data) ? data : [];
-    } catch (error) {
-      console.error("Party Loot | API Error:", error);
-      ui.notifications.error("Failed to fetch Party Loot items.");
-      return [];
-    }
-  }
-
-  // Other methods remain the same...
   async addFundEntry(entryData) {
     if (!(await this.refreshToken())) return false;
 
@@ -149,7 +140,7 @@ export class PartyLootAPI {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.authToken}`,
         },
         body: JSON.stringify(payload),
       });
@@ -171,7 +162,7 @@ export class PartyLootAPI {
       const response = await fetch(`${this.baseUrl}/fund-history/${entryId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.authToken}`,
         },
       });
 
@@ -182,6 +173,29 @@ export class PartyLootAPI {
       console.error("Party Loot | API Error:", error);
       ui.notifications.error("Failed to delete fund entry.");
       return false;
+    }
+  }
+
+  async fetchItems() {
+    if (!(await this.refreshToken())) return [];
+
+    try {
+      const response = await fetch(`${this.baseUrl}/items`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.authToken}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch items");
+
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error("Party Loot | API Error:", error);
+      ui.notifications.error("Failed to fetch Party Loot items.");
+      return [];
     }
   }
 
@@ -212,7 +226,7 @@ export class PartyLootAPI {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.authToken}`,
         },
         body: JSON.stringify(payload),
       });
@@ -235,7 +249,7 @@ export class PartyLootAPI {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.authToken}`,
         },
         body: JSON.stringify(itemData),
       });
@@ -257,7 +271,7 @@ export class PartyLootAPI {
       const response = await fetch(`${this.baseUrl}/items/${itemId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.authToken}`,
         },
       });
 
