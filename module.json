@@ -6,6 +6,7 @@
   "author": "JBartholomew",
   "minimumCoreVersion": "0.8.0",
   "compatibleCoreVersion": "11",
+  "systems": ["dnd5e", "pf2e", "wfrp4e", "swade"],
   "esmodules": ["scripts/party-loot.js"],
   "styles": ["styles/party-loot.css"],
   "packs": [],
