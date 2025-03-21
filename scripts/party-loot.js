@@ -33,6 +33,52 @@ Hooks.once("init", async function () {
     default: "",
   });
 
+  game.settings.register("party-loot", "userId", {
+    name: "User ID",
+    hint: "Your user ID in the Party Loot system (defaults to 0 if not set)",
+    scope: "world",
+    config: true,
+    type: Number,
+    default: 0,
+  });
+
+  game.settings.register("party-loot", "userGroupId", {
+    name: "User Group ID",
+    hint: "Your user group ID in the Party Loot system (defaults to 0 if not set)",
+    scope: "world",
+    config: true,
+    type: Number,
+    default: 0,
+  });
+
+  // Register Handlebars helpers
+  console.log("Party Loot | Registering Handlebars helpers");
+
+  Handlebars.registerHelper("formatCurrency", (amount) => {
+    return new Handlebars.SafeString(`${amount}`);
+  });
+
+  Handlebars.registerHelper("currencyIcon", (type) => {
+    const icons = {
+      platinum: "fa-diamond plat",
+      gold: "fa-diamond gold",
+      silver: "fa-diamond silver",
+      copper: "fa-diamond copper",
+    };
+    return icons[type] || "fa-coin";
+  });
+
+  // Add Handlebars helper for equality
+  Handlebars.registerHelper("eq", function (a, b) {
+    return a === b;
+  });
+
+  // Add Handlebars helper for splitting strings
+  Handlebars.registerHelper("split", function (str, separator) {
+    if (!str) return [];
+    return str.split(separator);
+  });
+
   // Initialize our API handler
   game.partyLoot = {
     api: new PartyLootAPI(),
@@ -75,33 +121,5 @@ Hooks.on("getSceneControlButtons", (controls) => {
       },
     ],
     activeTool: "funds",
-  });
-});
-
-// Register handlebars helpers
-Hooks.on("renderTemplates", () => {
-  Handlebars.registerHelper("formatCurrency", (amount) => {
-    return new Handlebars.SafeString(`${amount}`);
-  });
-
-  Handlebars.registerHelper("currencyIcon", (type) => {
-    const icons = {
-      platinum: "fa-diamond plat",
-      gold: "fa-diamond gold",
-      silver: "fa-diamond silver",
-      copper: "fa-diamond copper",
-    };
-    return icons[type] || "fa-coin";
-  });
-
-  // Add Handlebars helper for equality
-  Handlebars.registerHelper("eq", function (a, b) {
-    return a === b;
-  });
-
-  // Add Handlebars helper for splitting strings
-  Handlebars.registerHelper("split", function (str, separator) {
-    if (!str) return [];
-    return str.split(separator);
   });
 });

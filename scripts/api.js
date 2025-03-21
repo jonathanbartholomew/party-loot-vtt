@@ -3,12 +3,13 @@ export class PartyLootAPI {
     this.baseUrl = game.settings.get("party-loot", "apiUrl");
     this.token = game.settings.get("party-loot", "apiToken");
     this.campaignId = game.settings.get("party-loot", "campaignId");
+    console.log("Party Loot | API Initialized");
   }
 
   async refreshToken() {
     this.token = game.settings.get("party-loot", "apiToken");
     this.campaignId = game.settings.get("party-loot", "campaignId");
-    return this.token && this.campaignId;
+    return this.token; // Only need token to fetch data
   }
 
   async fetchFunds() {
@@ -26,6 +27,7 @@ export class PartyLootAPI {
       if (!response.ok) throw new Error("Failed to fetch funds data");
 
       const data = await response.json();
+      console.log("Party Loot | Funds data received:", data);
       return data.length > 0 ? data[0] : null;
     } catch (error) {
       console.error("Party Loot | API Error:", error);
@@ -49,6 +51,7 @@ export class PartyLootAPI {
       if (!response.ok) throw new Error("Failed to fetch fund history");
 
       const data = await response.json();
+      console.log("Party Loot | Fund history received:", data);
       return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error("Party Loot | API Error:", error);
@@ -57,6 +60,31 @@ export class PartyLootAPI {
     }
   }
 
+  async fetchItems() {
+    if (!(await this.refreshToken())) return [];
+
+    try {
+      const response = await fetch(`${this.baseUrl}/items`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch items");
+
+      const data = await response.json();
+      console.log("Party Loot | Items received:", data);
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error("Party Loot | API Error:", error);
+      ui.notifications.error("Failed to fetch Party Loot items.");
+      return [];
+    }
+  }
+
+  // Other methods remain the same...
   async addFundEntry(entryData) {
     if (!(await this.refreshToken())) return false;
 
@@ -113,29 +141,6 @@ export class PartyLootAPI {
       console.error("Party Loot | API Error:", error);
       ui.notifications.error("Failed to delete fund entry.");
       return false;
-    }
-  }
-
-  async fetchItems() {
-    if (!(await this.refreshToken())) return [];
-
-    try {
-      const response = await fetch(`${this.baseUrl}/items`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch items");
-
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
-    } catch (error) {
-      console.error("Party Loot | API Error:", error);
-      ui.notifications.error("Failed to fetch Party Loot items.");
-      return [];
     }
   }
 

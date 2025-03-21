@@ -13,22 +13,30 @@ export class ItemsManager {
 
   async refreshItems() {
     const itemsData = await game.partyLoot.api.fetchItems();
-    this.items = itemsData.map((item) => ({
-      id: item.id,
-      name: item.name,
-      owner: item.owner,
-      quantity: item.quantity,
-      source: item.source,
-      colorCode: item.color_code,
-      itemType: item.item_type,
-      rarity: item.rarity,
-      iconClass: item.icon_class || "fa-box",
-      description: item.description,
-      valueType: item.value_type,
-      tags: item.tags,
-      value: item.value,
-      dateAdded: new Date(item.added_date).toLocaleDateString(),
-    }));
+    if (Array.isArray(itemsData) && itemsData.length > 0) {
+      this.items = itemsData.map((item) => ({
+        id: item.id.toString(), // Ensure ID is a string
+        name: item.name || "",
+        owner: item.owner || "",
+        quantity: item.quantity || 1,
+        source: item.source || "",
+        colorCode: item.color_code || "#ffffff",
+        itemType: item.item_type || "",
+        rarity: item.rarity || "",
+        iconClass: item.icon_class || "fa-box",
+        description: item.description || "",
+        valueType: item.value_type || "",
+        tags: item.tags || "",
+        value: item.value || 0,
+        dateAdded: item.added_date
+          ? new Date(item.added_date).toLocaleDateString()
+          : "",
+      }));
+      console.log("Party Loot | Updated items:", this.items.length, "items");
+    } else {
+      console.log("Party Loot | No items data returned from API");
+      this.items = [];
+    }
     return this.items;
   }
 

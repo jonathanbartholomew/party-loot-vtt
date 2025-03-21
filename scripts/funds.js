@@ -23,23 +23,36 @@ export class FundsManager {
         silver: fundsData.silver || 0,
         copper: fundsData.copper || 0,
       };
+      console.log("Party Loot | Updated funds:", this.funds);
+    } else {
+      console.log("Party Loot | No funds data returned from API");
     }
     return this.funds;
   }
 
   async refreshFundHistory() {
     const historyData = await game.partyLoot.api.fetchFundHistory();
-    this.fundHistory = historyData.map((entry) => ({
-      id: entry.id,
-      platinum: entry.platinum,
-      gold: entry.gold,
-      silver: entry.silver,
-      copper: entry.copper,
-      description: entry.description,
-      date: new Date(entry.transaction_date).toLocaleString(),
-      dateRaw: new Date(entry.transaction_date),
-      subtract: entry.subtract === 1 || entry.subtract === true,
-    }));
+    if (Array.isArray(historyData) && historyData.length > 0) {
+      this.fundHistory = historyData.map((entry) => ({
+        id: entry.id,
+        platinum: entry.platinum || 0,
+        gold: entry.gold || 0,
+        silver: entry.silver || 0,
+        copper: entry.copper || 0,
+        description: entry.description || "",
+        date: new Date(entry.transaction_date).toLocaleString(),
+        dateRaw: new Date(entry.transaction_date),
+        subtract: entry.subtract === 1 || entry.subtract === true,
+      }));
+      console.log(
+        "Party Loot | Updated fund history:",
+        this.fundHistory.length,
+        "entries"
+      );
+    } else {
+      console.log("Party Loot | No fund history data returned from API");
+      this.fundHistory = [];
+    }
     return this.fundHistory;
   }
 
