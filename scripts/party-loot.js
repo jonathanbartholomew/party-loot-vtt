@@ -6,6 +6,7 @@ Hooks.once("init", async function () {
   console.log("Party Loot | Initializing Party Loot Module");
 
   // Register module settings
+  // Register module settings
   game.settings.register("party-loot", "apiUrl", {
     name: "API URL",
     hint: "URL of the Party Loot API service",
@@ -17,36 +18,37 @@ Hooks.once("init", async function () {
 
   game.settings.register("party-loot", "apiToken", {
     name: "API Token",
-    hint: "Authentication token for the Party Loot API",
+    hint: "Your Party Loot API token from your profile page",
     scope: "world",
     config: true,
     type: String,
     default: "",
   });
 
-  game.settings.register("party-loot", "campaignId", {
-    name: "Campaign ID",
-    hint: "ID of the active campaign to track",
-    scope: "world",
-    config: true,
-    type: String,
-    default: "",
-  });
-
+  // Register these settings that are used in the code but weren't registered
   game.settings.register("party-loot", "userId", {
     name: "User ID",
-    hint: "Your user ID in the Party Loot system (defaults to 0 if not set)",
+    hint: "Your Party Loot user ID (set automatically)",
     scope: "world",
-    config: true,
+    config: false,
     type: Number,
     default: 0,
   });
 
   game.settings.register("party-loot", "userGroupId", {
     name: "User Group ID",
-    hint: "Your user group ID in the Party Loot system (defaults to 0 if not set)",
+    hint: "Your Party Loot user group ID (set automatically)",
     scope: "world",
-    config: true,
+    config: false,
+    type: Number,
+    default: 0,
+  });
+
+  game.settings.register("party-loot", "campaignId", {
+    name: "Campaign ID",
+    hint: "ID of the active campaign to track (set automatically)",
+    scope: "world",
+    config: false,
     type: Number,
     default: 0,
   });
@@ -87,12 +89,22 @@ Hooks.once("init", async function () {
   };
 });
 
-// Once the game is ready
 Hooks.once("ready", async function () {
   if (game.user.isGM) {
-    // Initialize the data
-    await game.partyLoot.funds.initialize();
-    await game.partyLoot.items.initialize();
+    // Initialize the API connection and authenticate
+    const authenticated = await game.partyLoot.api.authenticate();
+
+    if (authenticated) {
+      ui.notifications.info("Party Loot API connected successfully!");
+
+      // Initialize the data
+      await game.partyLoot.funds.initialize();
+      await game.partyLoot.items.initialize();
+    } else {
+      ui.notifications.warn(
+        "Party Loot API connection failed. Please check your API token in module settings."
+      );
+    }
   }
 });
 

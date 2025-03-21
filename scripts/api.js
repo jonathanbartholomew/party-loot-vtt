@@ -2,14 +2,55 @@ export class PartyLootAPI {
   constructor() {
     this.baseUrl = game.settings.get("party-loot", "apiUrl");
     this.token = game.settings.get("party-loot", "apiToken");
-    this.campaignId = game.settings.get("party-loot", "campaignId");
-    console.log("Party Loot | API Initialized");
+    this.authenticated = false;
+  }
+
+  async authenticate() {
+    if (!this.token) return false;
+
+    try {
+      const response = await fetch(`${this.baseUrl}/foundry/authenticate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ apiToken: this.token }),
+      });
+
+      if (!response.ok) {
+        console.error(
+          "Party Loot | Authentication failed:",
+          await response.text()
+        );
+        ui.notifications.error(
+          "Party Loot authentication failed. Please check your API token."
+        );
+        return false;
+      }
+
+      const data = await response.json();
+
+      // Save the user details to settings
+      game.settings.set("party-loot", "userId", data.userId);
+      game.settings.set("party-loot", "userGroupId", data.userGroupId);
+      game.settings.set("party-loot", "campaignId", data.campaignId);
+
+      console.log(
+        "Party Loot | Authentication successful for user:",
+        data.username
+      );
+      this.authenticated = true;
+      return true;
+    } catch (error) {
+      console.error("Party Loot | API Error:", error);
+      ui.notifications.error("Failed to authenticate with Party Loot API.");
+      return false;
+    }
   }
 
   async refreshToken() {
     this.token = game.settings.get("party-loot", "apiToken");
-    this.campaignId = game.settings.get("party-loot", "campaignId");
-    return this.token; // Only need token to fetch data
+    return this.token && (await this.authenticate());
   }
 
   async fetchFunds() {
