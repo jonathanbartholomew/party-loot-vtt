@@ -77,7 +77,7 @@ class FundsApplication extends Application {
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       id: "party-loot-funds",
       title: "Party Funds",
       template: "modules/party-loot/templates/funds-panel.html",
@@ -208,7 +208,7 @@ class FundHistoryApplication extends Application {
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       id: "party-loot-fund-history",
       title: "Fund History",
       template: "modules/party-loot/templates/fund-history.html",

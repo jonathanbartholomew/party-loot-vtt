@@ -104,7 +104,7 @@ class ItemsApplication extends Application {
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       id: "party-loot-items",
       title: "Party Items",
       template: "modules/party-loot/templates/items-panel.html",

@@ -93,4 +93,15 @@ Hooks.on("renderTemplates", () => {
     };
     return icons[type] || "fa-coin";
   });
+
+  // Add Handlebars helper for equality
+  Handlebars.registerHelper("eq", function (a, b) {
+    return a === b;
+  });
+
+  // Add Handlebars helper for splitting strings
+  Handlebars.registerHelper("split", function (str, separator) {
+    if (!str) return [];
+    return str.split(separator);
+  });
 });
