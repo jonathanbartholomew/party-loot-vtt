@@ -10,13 +10,6 @@
   "esmodules": ["scripts/party-loot.js"],
   "styles": ["styles/party-loot.css"],
   "packs": [],
-  "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "languages/en.json"
-    }
-  ],
   "dependencies": [],
   "socket": false,
   "url": "https://github.com/jonathanbartholomew/party-loot-vtt",
