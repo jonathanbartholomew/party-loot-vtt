@@ -163,6 +163,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
   justify-content: center;
+  color: #fff !important;
 }
 
 .currency i {
@@ -212,20 +213,12 @@
   font-size: 0.9em;
 }
 
-.input-group label.platinum {
-  color: #e5e4e2;
+.input-group label {
+  color: #000 !important;
 }
 
-.input-group label.gold {
-  color: #ffd700;
-}
-
-.input-group label.silver {
-  color: #c0c0c0;
-}
-
-.input-group label.copper {
-  color: #b87333;
+input::placeholder {
+  color: #fff !important;
 }
 
 /* ============================
@@ -371,6 +364,7 @@
 .add-item-btn {
   background: linear-gradient(to bottom, #4caf50, #388e3c);
   border: 1px solid #4caf50;
+  max-width: 100px !important;
 }
 
 .add-item-btn:hover {
@@ -560,7 +554,7 @@
   font-weight: bold;
   width: 120px;
   flex-shrink: 0;
-  color: #ddd;
+  color: #fff !important;
 }
 
 .info-value {
@@ -578,7 +572,7 @@
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 0.9em;
-  color: #bd9a00;
+  color: #fff !important;
   border: 1px solid rgba(189, 154, 0, 0.3);
 }
 
@@ -590,6 +584,10 @@
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid rgba(189, 154, 0, 0.3);
+}
+
+.description .info-label {
+  color: #fff !important;
 }
 
 /* ============================
