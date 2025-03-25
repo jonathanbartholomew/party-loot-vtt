@@ -177,20 +177,17 @@
   text-shadow: 0 0 3px rgba(229, 228, 226, 0.5);
 }
 
-.currency.gold i,
-.gold {
+.currency.gold i {
   color: #ffd700;
   text-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
 }
 
-.currency.silver i,
-.silver {
+.currency.silver i {
   color: #c0c0c0;
   text-shadow: 0 0 3px rgba(192, 192, 192, 0.5);
 }
 
-.currency.copper i,
-.copper {
+.currency.copper i {
   color: #b87333;
   text-shadow: 0 0 3px rgba(184, 115, 51, 0.5);
 }
@@ -218,6 +215,10 @@
 }
 
 input::placeholder {
+  color: #636363 !important;
+}
+
+input.white-text::placeholder {
   color: #fff !important;
 }
 
@@ -320,6 +321,7 @@ input::placeholder {
   padding: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.9em;
+  word-break: break-word;
 }
 
 .fund-history-table tr.add {
@@ -554,7 +556,7 @@ input::placeholder {
   font-weight: bold;
   width: 120px;
   flex-shrink: 0;
-  color: #fff !important;
+  color: #000 !important;
 }
 
 .info-value {
@@ -587,7 +589,7 @@ input::placeholder {
 }
 
 .description .info-label {
-  color: #fff !important;
+  color: #000 !important;
 }
 
 /* ============================
