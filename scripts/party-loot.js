@@ -13,7 +13,7 @@ Hooks.once("init", async function () {
     scope: "world",
     config: true,
     type: String,
-    default: "https://partylootapp.com/api",
+    default: "https://partylootapp.com",
   });
 
   game.settings.register("party-loot", "apiToken", {

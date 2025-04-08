@@ -11,7 +11,7 @@ export class PartyLootAPI {
     if (!this.apiToken) return false;
 
     try {
-      const response = await fetch(`${this.baseUrl}/foundry/authenticate`, {
+      const response = await fetch(`${this.baseUrl}/api/foundry/authenticate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,18 +75,21 @@ export class PartyLootAPI {
     if (!(await this.refreshToken())) return null;
 
     try {
-      const response = await fetch(`${this.baseUrl}/funds`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.authToken}`,
-        },
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/funds?campaign_id=${this.campaignId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.authToken}`,
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to fetch funds data");
 
       const data = await response.json();
-      return data.length > 0 ? data[0] : null;
+      return data;
     } catch (error) {
       console.error("Party Loot | API Error:", error);
       ui.notifications.error("Failed to fetch Party Loot funds data.");
@@ -98,13 +101,16 @@ export class PartyLootAPI {
     if (!(await this.refreshToken())) return [];
 
     try {
-      const response = await fetch(`${this.baseUrl}/fund-history`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.authToken}`,
-        },
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/funds/history?campaign_id=${this.campaignId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.authToken}`,
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to fetch fund history");
 
@@ -136,7 +142,7 @@ export class PartyLootAPI {
         campaign_id: this.campaignId,
       };
 
-      const response = await fetch(`${this.baseUrl}/fund-history`, {
+      const response = await fetch(`${this.baseUrl}/api/funds/history`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -159,12 +165,15 @@ export class PartyLootAPI {
     if (!(await this.refreshToken())) return false;
 
     try {
-      const response = await fetch(`${this.baseUrl}/fund-history/${entryId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${this.authToken}`,
-        },
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/funds/history/${entryId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${this.authToken}`,
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to delete fund entry");
 
@@ -180,7 +189,7 @@ export class PartyLootAPI {
     if (!(await this.refreshToken())) return [];
 
     try {
-      const response = await fetch(`${this.baseUrl}/items`, {
+      const response = await fetch(`${this.baseUrl}/api/items`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -219,10 +228,10 @@ export class PartyLootAPI {
         tags: itemData.tags || "",
         item_type_id: itemData.item_type_id || null,
         value: itemData.value || null,
-        value_type: itemData.value_type || null,
+        value_type_id: itemData.value_type || null,
       };
 
-      const response = await fetch(`${this.baseUrl}/items`, {
+      const response = await fetch(`${this.baseUrl}/api/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -245,7 +254,7 @@ export class PartyLootAPI {
     if (!(await this.refreshToken())) return false;
 
     try {
-      const response = await fetch(`${this.baseUrl}/items/${itemId}`, {
+      const response = await fetch(`${this.baseUrl}/api/items/${itemId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -268,7 +277,7 @@ export class PartyLootAPI {
     if (!(await this.refreshToken())) return false;
 
     try {
-      const response = await fetch(`${this.baseUrl}/items/${itemId}`, {
+      const response = await fetch(`${this.baseUrl}/api/items/${itemId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${this.authToken}`,
