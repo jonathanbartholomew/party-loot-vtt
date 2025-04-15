@@ -192,6 +192,37 @@
   text-shadow: 0 0 3px rgba(184, 115, 51, 0.5);
 }
 
+/* Style consistency for the sell button */
+.sell-item-btn {
+  margin-right: 2px;
+}
+
+/* Form styling to match funds styling */
+#haggleFields {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+/* Currency types styling */
+.currency-icon {
+  margin-right: 5px;
+}
+
+.plat {
+  color: #e5e4e2;
+}
+.gold {
+  color: #ffd700;
+}
+.silver {
+  color: #c0c0c0;
+}
+.copper {
+  color: #b87333;
+}
+
 /* Currency input styling */
 .currency-inputs {
   display: grid;

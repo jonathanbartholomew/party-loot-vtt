@@ -94,6 +94,78 @@ export class ItemsManager {
     return false;
   }
 
+  async sellItem(itemId, sellParams) {
+    // Get the item information first
+    const item = this.items.find((i) => i.id === itemId);
+    if (!item) return false;
+
+    try {
+      // If adding to party funds, create a fund entry
+      if (sellParams.addToFunds) {
+        // Convert to the correct currency values
+        let platinum = 0,
+          gold = 0,
+          silver = 0,
+          copper = 0;
+
+        // Calculate values based on custom or original price
+        const itemValue = sellParams.useHagglePrice
+          ? sellParams.customValue
+          : item.value;
+        const valueType = sellParams.useHagglePrice
+          ? sellParams.customValueType
+          : item.value_type_id;
+
+        // Calculate total value (value × quantity)
+        const totalValue = parseInt(itemValue) * parseInt(item.quantity || 1);
+
+        // Set the correct currency field based on value type
+        switch (valueType) {
+          case "1": // Platinum
+            platinum = totalValue;
+            break;
+          case "2": // Gold
+            gold = totalValue;
+            break;
+          case "3": // Silver
+            silver = totalValue;
+            break;
+          case "4": // Copper
+            copper = totalValue;
+            break;
+        }
+
+        // Create description based on haggled price or original
+        const description = sellParams.useHagglePrice
+          ? `Sold item: ${item.name} (${item.quantity}x at ${
+              sellParams.customValue
+            } ${getValueTypeDisplay(valueType)} each - haggled price)`
+          : `Sold item: ${item.name} (${item.quantity}x at ${
+              item.value
+            } ${getValueTypeDisplay(item.value_type_id)} each)`;
+
+        // Create a fund entry
+        await game.partyLoot.funds.addFundEntry({
+          platinum,
+          gold,
+          silver,
+          copper,
+          description,
+          subtract: false, // Adding funds
+        });
+      }
+
+      // Delete the item
+      await this.deleteItem(itemId);
+
+      return true;
+    } catch (error) {
+      console.error("Party Loot | Error selling item:", error);
+      ui.notifications.error("Failed to sell item");
+      return false;
+    }
+  }
+
   renderItemsPanel() {
     // Create application dialog
     const itemsApp = new ItemsApplication(this);
@@ -184,6 +256,7 @@ class ItemsApplication extends Application {
     html.find(".edit-item-btn").click((ev) => this._onEditItem(ev));
     html.find(".delete-item-btn").click((ev) => this._onDeleteItem(ev));
     html.find(".view-item-btn").click((ev) => this._onViewItem(ev));
+    html.find(".sell-item-btn").click((ev) => this._onSellItem(ev));
 
     // Pagination
     html.find(".page-prev").click(() => this._onPageChange(-1));
@@ -382,5 +455,95 @@ class ItemsApplication extends Application {
       default: "close",
       width: 600,
     }).render(true);
+  }
+
+  async _onSellItem(event) {
+    const itemId = event.currentTarget.dataset.id;
+    const item = this.itemsManager.items.find((i) => i.id === itemId);
+
+    if (!item) {
+      ui.notifications.error("Item not found.");
+      return;
+    }
+
+    // Check if the item has a value
+    if (!item.value) {
+      ui.notifications.warn("This item has no value set.");
+      return;
+    }
+
+    // Create dialog for selling item
+    const content = await renderTemplate(
+      "modules/party-loot/templates/sell-item.html",
+      {
+        item: item,
+      }
+    );
+
+    new Dialog({
+      title: `Sell Item: ${item.name}`,
+      content: content,
+      buttons: {
+        funds: {
+          icon: '<i class="fas fa-coins"></i>',
+          label: "Sell to Party Funds",
+          callback: (html) => this._processSellToFunds(html, item),
+        },
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: "Cancel",
+        },
+      },
+      default: "funds",
+      width: 400,
+    }).render(true);
+  }
+
+  async _processSellToFunds(html, item) {
+    // Get haggle options
+    const useHagglePrice = html.find("#haggleCheckbox").is(":checked");
+    const customValue = useHagglePrice ? html.find("#customValue").val() : null;
+    const customValueType = useHagglePrice
+      ? html.find("#customValueType").val()
+      : null;
+
+    // Validate
+    if (useHagglePrice && (!customValue || parseInt(customValue) <= 0)) {
+      ui.notifications.error(
+        "Please enter a valid haggle price greater than 0"
+      );
+      return;
+    }
+
+    // Prepare sell parameters
+    const sellParams = {
+      addToFunds: true,
+      useHagglePrice,
+      customValue,
+      customValueType,
+    };
+
+    // Process the sale
+    const success = await this.itemsManager.sellItem(item.id, sellParams);
+
+    if (success) {
+      ui.notifications.success(`Item sold and funds added to party treasury.`);
+      this.render();
+    }
+  }
+}
+
+function getValueTypeDisplay(valueTypeId) {
+  switch (valueTypeId) {
+    case "1":
+      return "pp";
+    case "2":
+      return "gp";
+    case "3":
+      return "sp";
+    case "4":
+      return "cp";
+    default:
+      return "gp";
   }
 }
