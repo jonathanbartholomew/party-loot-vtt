@@ -2,7 +2,7 @@
   "id": "party-loot",
   "title": "Party Loot",
   "description": "Track party funds and items for your campaign with a comprehensive inventory and currency management system.",
-  "version": "1.1.0",
+  "version": "1.0.10",
   "compatibility": {
     "minimum": "10",
     "verified": "12",
@@ -27,6 +27,6 @@
   "socket": false,
   "url": "https://github.com/jonathanbartholomew/party-loot-vtt",
   "manifest": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/module.json",
-  "download": "https://github.com/jonathanbartholomew/party-loot-vtt/archive/refs/tags/v1.1.0.zip",
+  "download": "https://github.com/jonathanbartholomew/party-loot-vtt/archive/refs/tags/v1.0.10.zip",
   "readme": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/README.md"
 }
