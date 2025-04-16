@@ -410,10 +410,15 @@ class PartyLootApp extends Application {
     this.isLoading = true;
     this.render();
 
-    await this.loadData();
-
-    this.isLoading = false;
-    this.render();
+    try {
+      await this.loadData();
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+      this.error = error.message || "Failed to refresh data";
+    } finally {
+      this.isLoading = false;
+      this.render();
+    }
   }
 
   // API Methods
@@ -438,10 +443,11 @@ class PartyLootApp extends Application {
     } catch (error) {
       console.error("Error loading data:", error);
       this.error = error.message || "Failed to load data from Party Loot API";
+    } finally {
+      // Make sure isLoading is set to false even if there's an error
+      this.isLoading = false;
+      this.render();
     }
-
-    this.isLoading = false;
-    this.render();
   }
 
   async fetchFunds() {
@@ -451,23 +457,31 @@ class PartyLootApp extends Application {
 
     const campaignId = game.settings.get("party-loot", "campaignId");
 
-    const response = await fetch(
-      `${this.apiUrl}/api/funds?campaign_id=${campaignId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
+    try {
+      const response = await fetch(
+        `${this.apiUrl}/api/funds?campaign_id=${campaignId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Funds API error:", errorText);
+        throw new Error(
+          `Failed to fetch funds: ${response.status} ${response.statusText}`
+        );
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch funds: ${response.statusText}`);
+      return await response.json();
+    } catch (error) {
+      console.error("Fetch funds error:", error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data;
   }
 
   async fetchFundHistory() {
@@ -477,36 +491,41 @@ class PartyLootApp extends Application {
 
     const campaignId = game.settings.get("party-loot", "campaignId");
 
-    const response = await fetch(
-      `${this.apiUrl}/api/funds/history?campaign_id=${campaignId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
+    try {
+      const response = await fetch(
+        `${this.apiUrl}/api/funds/history?campaign_id=${campaignId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch fund history: ${response.statusText}`);
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch fund history: ${response.statusText}`);
+      const data = await response.json();
+
+      // Format dates and currency display
+      return data.map((entry) => ({
+        id: entry.id,
+        platinum: entry.platinum,
+        gold: entry.gold,
+        silver: entry.silver,
+        copper: entry.copper,
+        amount: this.formatCurrencyDisplay(entry),
+        desc: entry.description,
+        date: new Date(entry.transaction_date).toLocaleString(),
+        dateRaw: new Date(entry.transaction_date),
+        subtract: entry.subtract === 1 || entry.subtract === true,
+      }));
+    } catch (error) {
+      console.error("Fetch fund history error:", error);
+      throw error;
     }
-
-    const data = await response.json();
-
-    // Format dates and currency display
-    return data.map((entry) => ({
-      id: entry.id,
-      platinum: entry.platinum,
-      gold: entry.gold,
-      silver: entry.silver,
-      copper: entry.copper,
-      amount: this.formatCurrencyDisplay(entry),
-      desc: entry.description,
-      date: new Date(entry.transaction_date).toLocaleString(),
-      dateRaw: new Date(entry.transaction_date),
-      subtract: entry.subtract === 1 || entry.subtract === true,
-    }));
   }
 
   async fetchItems() {
@@ -514,20 +533,25 @@ class PartyLootApp extends Application {
       throw new Error("API URL and token must be configured in settings");
     }
 
-    const response = await fetch(`${this.apiUrl}/api/items`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${this.apiUrl}/api/items`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch items: ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch items: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Fetch items error:", error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data;
   }
 
   async addFundEntry(entryData) {
@@ -546,21 +570,26 @@ class PartyLootApp extends Application {
       campaign_id: campaignId,
     };
 
-    const response = await fetch(`${this.apiUrl}/api/funds/history`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch(`${this.apiUrl}/api/funds/history`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to add fund entry");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to add fund entry");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Add fund entry error:", error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   async addItem(itemData) {
@@ -579,21 +608,26 @@ class PartyLootApp extends Application {
       campaign_id: campaignId,
     };
 
-    const response = await fetch(`${this.apiUrl}/api/items`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch(`${this.apiUrl}/api/items`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to add item");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to add item");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Add item error:", error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   async deleteItem(itemId) {
@@ -601,18 +635,23 @@ class PartyLootApp extends Application {
       throw new Error("API URL and token must be configured in settings");
     }
 
-    const response = await fetch(`${this.apiUrl}/api/items/${itemId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`${this.apiUrl}/api/items/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to delete item");
+      if (!response.ok) {
+        throw new Error("Failed to delete item");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Delete item error:", error);
+      throw error;
     }
-
-    return await response.json();
   }
 
   // Utility Methods
