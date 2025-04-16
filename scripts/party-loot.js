@@ -40,7 +40,7 @@ class PartyLootApp extends Application {
     this.apiToken = game.settings.get("party-loot", "apiToken");
 
     // Load data when initialized
-    this.loadData();
+    setTimeout(() => this.loadData(), 500);
   }
 
   async getData() {
