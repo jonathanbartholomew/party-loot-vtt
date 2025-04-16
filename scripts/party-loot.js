@@ -66,21 +66,22 @@ class PartyLootApp extends Application {
   async getData() {
     console.log("getData called, isLoading:", this.isLoading);
 
-    // Make sure filteredItems is defined
-    if (!this.filteredItems) {
-      this.filteredItems = this.items || [];
-    }
+    // Force isLoading to be a boolean (sometimes it might be undefined or null)
+    const loadingState = this.isLoading === true;
+    console.log("Actual loading state being used:", loadingState);
 
     return {
       funds: this.funds || { platinum: 0, gold: 0, silver: 0, copper: 0 },
       fundHistory: this.fundHistory || [],
-      items: this.filteredItems.slice(
-        (this.currentPage - 1) * this.itemsPerPage,
-        this.currentPage * this.itemsPerPage
-      ),
-      isLoading: this.isLoading,
+      items:
+        this.filteredItems?.slice(
+          (this.currentPage - 1) * this.itemsPerPage,
+          this.currentPage * this.itemsPerPage
+        ) || [],
+      isLoading: loadingState, // Use the explicitly checked boolean
       error: this.error,
-      totalPages: Math.ceil(this.filteredItems.length / this.itemsPerPage) || 1,
+      totalPages:
+        Math.ceil((this.filteredItems?.length || 0) / this.itemsPerPage) || 1,
       currentPage: this.currentPage,
       showFundHistory: false,
       totalItem: this.calculateTotalItemValue(),
@@ -461,6 +462,7 @@ class PartyLootApp extends Application {
       this.funds = fundsData;
       this.fundHistory = fundHistoryData;
       this.items = itemsData;
+      this.filteredItems = itemsData; // Ensure filteredItems is initialized
 
       // Apply current filters
       this._filterAndSearchItems(this.searchTerm, this.ownerFilter);
@@ -477,7 +479,18 @@ class PartyLootApp extends Application {
       console.log("Setting isLoading to false");
       this.isLoading = false;
       this.render();
-      console.log("Render called after loading data");
+
+      // Additional DOM manipulation as a failsafe
+      setTimeout(() => {
+        if (this.element) {
+          const loadingEl = this.element.find(".loading-container");
+          if (loadingEl.length) {
+            console.log("Manually removing loading indicator");
+            loadingEl.remove();
+            this.element.find(".sheet-content").show();
+          }
+        }
+      }, 500);
     }
   }
 
