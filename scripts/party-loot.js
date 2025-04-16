@@ -37,7 +37,7 @@ class PartyLootApp extends Application {
 
     // Set up API connection details
     this.apiUrl = game.settings.get("party-loot", "apiUrl");
-    this.apiToken = game.settings.get("party-loot", "apiToken");
+    this.token = game.settings.get("party-loot", "apiToken");
 
     // Load data when initialized
     setTimeout(() => this.loadData(), 500);
@@ -445,7 +445,7 @@ class PartyLootApp extends Application {
   }
 
   async fetchFunds() {
-    if (!this.apiUrl || !this.apiToken) {
+    if (!this.apiUrl || !this.token) {
       throw new Error("API URL and token must be configured in settings");
     }
 
@@ -457,7 +457,7 @@ class PartyLootApp extends Application {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
+          Authorization: `Bearer ${this.token}`,
         },
       }
     );
@@ -471,7 +471,7 @@ class PartyLootApp extends Application {
   }
 
   async fetchFundHistory() {
-    if (!this.apiUrl || !this.apiToken) {
+    if (!this.apiUrl || !this.token) {
       throw new Error("API URL and token must be configured in settings");
     }
 
@@ -483,7 +483,7 @@ class PartyLootApp extends Application {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
+          Authorization: `Bearer ${this.token}`,
         },
       }
     );
@@ -510,7 +510,7 @@ class PartyLootApp extends Application {
   }
 
   async fetchItems() {
-    if (!this.apiUrl || !this.apiToken) {
+    if (!this.apiUrl || !this.token) {
       throw new Error("API URL and token must be configured in settings");
     }
 
@@ -518,7 +518,7 @@ class PartyLootApp extends Application {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
+        Authorization: `Bearer ${this.token}`,
       },
     });
 
@@ -531,7 +531,7 @@ class PartyLootApp extends Application {
   }
 
   async addFundEntry(entryData) {
-    if (!this.apiUrl || !this.apiToken) {
+    if (!this.apiUrl || !this.token) {
       throw new Error("API URL and token must be configured in settings");
     }
 
@@ -550,7 +550,7 @@ class PartyLootApp extends Application {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
+        Authorization: `Bearer ${this.token}`,
       },
       body: JSON.stringify(payload),
     });
@@ -564,7 +564,7 @@ class PartyLootApp extends Application {
   }
 
   async addItem(itemData) {
-    if (!this.apiUrl || !this.apiToken) {
+    if (!this.apiUrl || !this.token) {
       throw new Error("API URL and token must be configured in settings");
     }
 
@@ -583,7 +583,7 @@ class PartyLootApp extends Application {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
+        Authorization: `Bearer ${this.token}`,
       },
       body: JSON.stringify(payload),
     });
@@ -597,14 +597,14 @@ class PartyLootApp extends Application {
   }
 
   async deleteItem(itemId) {
-    if (!this.apiUrl || !this.apiToken) {
+    if (!this.apiUrl || !this.token) {
       throw new Error("API URL and token must be configured in settings");
     }
 
     const response = await fetch(`${this.apiUrl}/api/items/${itemId}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
+        Authorization: `Bearer ${this.token}`,
       },
     });
 
