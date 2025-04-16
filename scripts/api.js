@@ -215,6 +215,7 @@ export class PartyLootAPI {
       const userId = game.settings.get("party-loot", "userId") || 0;
       const userGroupId = game.settings.get("party-loot", "userGroupId") || 0;
 
+      // Create a clean payload object
       const payload = {
         user_id: userId,
         name: itemData.name,
@@ -225,11 +226,32 @@ export class PartyLootAPI {
         campaign_id: this.campaignId,
         description: itemData.description || "",
         item_rarity_id: itemData.item_rarity_id || null,
-        tags: itemData.tags || "",
         item_type_id: itemData.item_type_id || null,
         value: itemData.value || null,
-        value_type_id: itemData.value_type || null,
+        value_type_id: itemData.value_type_id || null,
       };
+
+      // FIX: Handle tags properly - it can be a string or an array
+      if (itemData.tags) {
+        // If it's already a string, use it directly
+        if (typeof itemData.tags === "string") {
+          payload.tags = itemData.tags;
+        }
+        // If it's an array, join it with commas
+        else if (Array.isArray(itemData.tags)) {
+          payload.tags = itemData.tags.join(",");
+        }
+        // Otherwise, convert to string
+        else {
+          payload.tags = String(itemData.tags);
+        }
+      } else {
+        // Explicitly set tags to empty string if not provided
+        payload.tags = "";
+      }
+
+      // Log the payload for debugging (remove in production)
+      console.log("API add item payload:", payload);
 
       const response = await fetch(`${this.baseUrl}/api/items`, {
         method: "POST",
@@ -240,12 +262,16 @@ export class PartyLootAPI {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error("Failed to add item");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Party Loot | API Error:", errorText);
+        throw new Error(`Failed to add item: ${errorText}`);
+      }
 
       return true;
     } catch (error) {
       console.error("Party Loot | API Error:", error);
-      ui.notifications.error("Failed to add item.");
+      ui.notifications.error("Failed to add item: " + error.message);
       return false;
     }
   }

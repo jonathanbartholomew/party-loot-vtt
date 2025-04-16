@@ -262,21 +262,184 @@ class ItemsApplication extends Application {
     html.find(".page-prev").click(() => this._onPageChange(-1));
     html.find(".page-next").click(() => this._onPageChange(1));
 
+    // FIX: Improved search input handling to prevent focus loss
+    const searchInput = html.find("#item-search");
+    if (searchInput.length) {
+      // Use keyup instead of input event to prevent focus issues
+      searchInput.off("input").on("keyup", (ev) => {
+        // Store the current cursor position
+        const cursorPos = ev.target.selectionStart;
+
+        // Update the search text
+        this.searchText = ev.target.value;
+
+        // Update the UI without losing focus
+        this._updateFilteredItems();
+
+        // After the update, explicitly set focus back and restore cursor position
+        setTimeout(() => {
+          searchInput.focus();
+          searchInput[0].setSelectionRange(cursorPos, cursorPos);
+        }, 0);
+      });
+    }
+
     // Filters
-    html.find("#item-search").on("input", (ev) => this._onSearch(ev));
     html.find("#owner-filter").change((ev) => this._onFilterOwner(ev));
+  }
+
+  _updateFilteredItems() {
+    // Get the filtered items
+    let filteredItems = [...this.itemsManager.items];
+
+    if (this.filterOwner) {
+      filteredItems = filteredItems.filter(
+        (item) => item.owner === this.filterOwner
+      );
+    }
+
+    if (this.searchText) {
+      const searchLower = this.searchText.toLowerCase();
+      filteredItems = filteredItems.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchLower) ||
+          item.owner.toLowerCase().includes(searchLower) ||
+          item.source.toLowerCase().includes(searchLower) ||
+          (item.description &&
+            item.description.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // Reset to first page when filtering
+    this.page = 1;
+
+    // Update the items table without doing a full re-render
+    this._updateItemsTable(filteredItems);
+  }
+
+  _updateItemsTable(filteredItems) {
+    // Pagination
+    const totalPages = Math.ceil(filteredItems.length / this.entriesPerPage);
+    const start = (this.page - 1) * this.entriesPerPage;
+    const end = start + this.entriesPerPage;
+    const paginatedItems = filteredItems.slice(start, end);
+
+    // Get the table body
+    const tableBody = this.element.find("tbody");
+
+    // Clear existing rows
+    tableBody.empty();
+
+    // No items message
+    if (paginatedItems.length === 0) {
+      tableBody.append(
+        `<tr><td colspan="5" class="text-center">No items found.</td></tr>`
+      );
+    } else {
+      // Add each item
+      paginatedItems.forEach((item) => {
+        const row = this._createItemRow(item);
+        tableBody.append(row);
+      });
+    }
+
+    // Update pagination display
+    this._updatePagination(filteredItems.length, totalPages);
+  }
+
+  _createItemRow(item) {
+    return `
+      <tr data-item-id="${item.id}">
+        <td>
+          <div class="item-name">
+            ${
+              item.iconClass
+                ? `<i class="fas ${item.iconClass}" style="color: ${
+                    item.colorCode || "#fff"
+                  };"></i>`
+                : ""
+            }
+            ${item.name}
+          </div>
+        </td>
+        <td>${item.owner}</td>
+        <td>${item.quantity}</td>
+        <td>
+          <div class="btn-group">
+            <button class="view-item-btn" data-id="${
+              item.id
+            }"><i class="fas fa-eye"></i></button>
+            <button class="edit-item-btn" data-id="${
+              item.id
+            }"><i class="fas fa-edit"></i></button>
+            ${
+              item.value
+                ? `<button class="sell-item-btn" data-id="${item.id}"><i class="fas fa-coins"></i></button>`
+                : ""
+            }
+            <button class="delete-item-btn" data-id="${
+              item.id
+            }"><i class="fas fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  // Update pagination info
+  _updatePagination(totalItems, totalPages) {
+    const paginationElem = this.element.find(".pagination-info");
+    if (paginationElem.length) {
+      paginationElem.html(
+        `Page ${this.page} of ${totalPages || 1} (${totalItems} total)`
+      );
+    }
+
+    // Enable/disable pagination buttons
+    this.element.find(".page-prev").prop("disabled", this.page <= 1);
+    this.element.find(".page-next").prop("disabled", this.page >= totalPages);
   }
 
   _onSearch(event) {
     this.searchText = event.target.value;
     this.page = 1; // Reset to first page
-    this.render();
+    this._updateFilteredItems(); // Update without full re-render
   }
 
   _onFilterOwner(event) {
     this.filterOwner = event.target.value;
     this.page = 1; // Reset to first page
-    this.render();
+    this._updateFilteredItems(); // Update without full re-render
+  }
+
+  _onPageChange(direction) {
+    const newPage = this.page + direction;
+
+    // Get current filtered items count
+    let filteredItems = [...this.itemsManager.items];
+    if (this.filterOwner) {
+      filteredItems = filteredItems.filter(
+        (item) => item.owner === this.filterOwner
+      );
+    }
+    if (this.searchText) {
+      const searchLower = this.searchText.toLowerCase();
+      filteredItems = filteredItems.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchLower) ||
+          item.owner.toLowerCase().includes(searchLower) ||
+          item.source.toLowerCase().includes(searchLower) ||
+          (item.description &&
+            item.description.toLowerCase().includes(searchLower))
+      );
+    }
+
+    const totalPages = Math.ceil(filteredItems.length / this.entriesPerPage);
+
+    if (newPage > 0 && newPage <= totalPages) {
+      this.page = newPage;
+      this._updateItemsTable(filteredItems);
+    }
   }
 
   _onPageChange(direction) {
@@ -317,6 +480,7 @@ class ItemsApplication extends Application {
   }
 
   async _processItemForm(html, itemId = null) {
+    // Get all form values
     const formData = {
       name: html.find('[name="name"]').val(),
       owner: html.find('[name="owner"]').val(),
@@ -326,9 +490,32 @@ class ItemsApplication extends Application {
       item_rarity_id: html.find('[name="item_rarity_id"]').val() || null,
       value: html.find('[name="value"]').val() || null,
       value_type_id: html.find('[name="value_type_id"]').val() || null,
-      tags: html.find('[name="tags"]').val() || "",
       description: html.find('[name="description"]').val() || "",
     };
+
+    // FIX: Properly handle tags - get the raw string value first
+    const tagsString = html.find('[name="tags"]').val() || "";
+
+    // Process tags in a more robust way
+    if (tagsString.trim() !== "") {
+      // Split by commas and filter out empty entries
+      const tagsArray = tagsString
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== "");
+
+      // If we have any valid tags, join them back with commas
+      if (tagsArray.length > 0) {
+        formData.tags = tagsArray.join(",");
+      } else {
+        formData.tags = ""; // Empty string if no valid tags
+      }
+    } else {
+      formData.tags = ""; // Explicitly set to empty string if blank
+    }
+
+    // Log the form data for debugging (remove in production)
+    console.log("Item form data:", formData);
 
     // Validate
     if (!formData.name || !formData.owner || !formData.source) {
