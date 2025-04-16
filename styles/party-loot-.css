@@ -1,0 +1,511 @@
+/* Party Loot - Foundry VTT Module Styles */
+
+/* Main application styles */
+.party-loot {
+  color: #f0f0f0;
+}
+
+.party-loot .window-content {
+  background: #1e1e1e;
+  padding: 0;
+}
+
+/* Header and tabs */
+.party-loot .tabs {
+  border-bottom: 1px solid #444;
+  margin-bottom: 10px;
+  flex: 0;
+  padding: 5px 5px 0 5px;
+}
+
+.party-loot .tabs .item {
+  padding: 5px 10px;
+  margin: 0 5px;
+  border-radius: 5px 5px 0 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f0f0f0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.party-loot .tabs .item.active {
+  background: #bd9a00;
+  color: #000;
+  font-weight: bold;
+}
+
+/* Funds display */
+.party-loot .funds-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.party-loot .funds-display .fund {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #f0f0f0;
+  border: 1px solid #444;
+  border-radius: 3px;
+  resize: vertical;
+}
+
+.party-loot .fund-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.party-loot .fund-buttons button {
+  flex: 1;
+  padding: 5px 10px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.party-loot .fund-buttons .add-funds {
+  background: #336633;
+  border: 1px solid #449944;
+  color: #fff;
+}
+
+.party-loot .fund-buttons .remove-funds {
+  background: #663333;
+  border: 1px solid #994444;
+  color: #fff;
+}
+
+.party-loot .fund-buttons .view-fund-history {
+  background: #0f4b6e;
+  border: 1px solid #1a6aa5;
+  color: #fff;
+}
+
+.party-loot .fund-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.party-loot .fund-buttons button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Fund History */
+.party-loot .fund-history {
+  margin: 10px 0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.party-loot .fund-history-header {
+  display: flex;
+  background: #252525;
+  padding: 5px 10px;
+  font-weight: bold;
+  border-bottom: 1px solid #444;
+}
+
+.party-loot .fund-history-header > div {
+  flex: 1;
+  padding: 5px;
+}
+
+.party-loot .fund-history-entry {
+  display: flex;
+  border-bottom: 1px solid #333;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.party-loot .fund-history-entry > div {
+  flex: 1;
+  padding: 8px 5px;
+}
+
+.party-loot .fund-history-entry.subtract {
+  color: #ff6666;
+}
+
+.party-loot .fund-history-entry.add {
+  color: #66ff66;
+}
+
+.party-loot .fund-history-actions {
+  text-align: right;
+}
+
+.party-loot .fund-history-actions i {
+  cursor: pointer;
+  margin-left: 8px;
+  transition: color 0.2s ease;
+}
+
+.party-loot .fund-history-actions i:hover {
+  color: #bd9a00;
+}
+
+/* Item Table */
+.party-loot .items-table-container {
+  margin-top: 10px;
+}
+
+.party-loot .items-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.party-loot .item-filters {
+  display: flex;
+  gap: 10px;
+}
+
+.party-loot .item-filters input,
+.party-loot .item-filters select {
+  background: rgba(0, 0, 0, 0.3);
+  color: #f0f0f0;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 5px;
+}
+
+.party-loot .items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.party-loot .items-table th {
+  background: #252525;
+  padding: 8px 5px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 1px solid #444;
+  position: relative;
+  cursor: pointer;
+}
+
+.party-loot .items-table th:after {
+  content: "⯆";
+  position: absolute;
+  right: 5px;
+  color: #888;
+  opacity: 0.5;
+}
+
+.party-loot .items-table th.asc:after {
+  content: "⯅";
+  opacity: 1;
+  color: #bd9a00;
+}
+
+.party-loot .items-table th.desc:after {
+  content: "⯆";
+  opacity: 1;
+  color: #bd9a00;
+}
+
+.party-loot .items-table td {
+  padding: 8px 5px;
+  border-bottom: 1px solid #333;
+}
+
+.party-loot .item-row {
+  background: rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.party-loot .item-row:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.party-loot .item-name {
+  display: flex;
+  align-items: center;
+}
+
+.party-loot .item-name i {
+  margin-right: 8px;
+}
+
+.party-loot .item-details-row {
+  display: none;
+  background: #252525;
+  border-bottom: 1px solid #444;
+}
+
+.party-loot .item-details {
+  padding: 10px;
+}
+
+.party-loot .toggle-details {
+  background: none;
+  border: none;
+  color: #bd9a00;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 8px;
+}
+
+.party-loot .pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.party-loot .pagination-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.party-loot .pagination-buttons button {
+  background: #333;
+  border: 1px solid #444;
+  color: #f0f0f0;
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.party-loot .pagination-buttons button:hover:not(:disabled) {
+  background: #444;
+}
+
+.party-loot .pagination-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Item Form */
+.party-loot .item-form {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.party-loot .item-form h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.party-loot .item-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.party-loot .item-form-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.party-loot .item-form-row label {
+  margin-bottom: 5px;
+}
+
+.party-loot .item-form-row input,
+.party-loot .item-form-row select,
+.party-loot .item-form-row textarea {
+  background: rgba(0, 0, 0, 0.3);
+  color: #f0f0f0;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 5px;
+}
+
+.party-loot .item-form-row textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.party-loot .advanced-options {
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  border: 1px dashed #444;
+}
+
+.party-loot .show-advanced-options {
+  background: none;
+  border: none;
+  color: #bd9a00;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+}
+
+.party-loot .show-advanced-options i {
+  margin-right: 5px;
+}
+
+.party-loot .add-item-button {
+  background: #336633;
+  border: 1px solid #449944;
+  color: #fff;
+  border-radius: 3px;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.party-loot .add-item-button:hover {
+  background: #449944;
+}
+
+/* Action buttons */
+.party-loot .action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.party-loot .edit-button {
+  color: #4488cc;
+}
+
+.party-loot .delete-button {
+  color: #cc4444;
+}
+
+.party-loot .sell-button {
+  color: #44cc44;
+}
+
+.party-loot .action-button:hover {
+  transform: scale(1.2);
+}
+
+/* Loading and error states */
+.party-loot .loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.party-loot .loader {
+  border: 5px solid #333;
+  border-radius: 50%;
+  border-top: 5px solid #bd9a00;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.party-loot .error-container {
+  padding: 20px;
+  background: rgba(204, 68, 68, 0.2);
+  border: 1px solid #cc4444;
+  border-radius: 5px;
+  color: #ff9999;
+  margin: 15px 0;
+}
+
+.party-loot .error-container i {
+  margin-right: 8px;
+}
+
+/* Currency breakdown visualization */
+.party-loot .currency-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.party-loot .currency-breakdown .currency {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+.party-loot .bg-danger-light {
+  background-color: rgba(204, 68, 68, 0.3);
+}
+
+.party-loot .bg-success-light {
+  background-color: rgba(68, 204, 68, 0.3);
+}
+
+/* Sidebar button */
+.party-loot-button {
+  margin-bottom: 8px;
+}
+
+.party-loot-button button {
+  width: 100%;
+  background: linear-gradient(to right, #bd9a00, #aa8a00);
+  color: #000;
+  font-weight: bold;
+  border: 1px solid #997700;
+  border-radius: 3px;
+  padding: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.party-loot-button button i {
+  margin-right: 5px;
+}
+
+.party-loot-button button:hover {
+  background: linear-gradient(to right, #caaa22, #bd9a00);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.party-loot-button button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .party-loot .items-table th:not(:first-child):not(:last-child) {
+    display: none;
+  }
+
+  .party-loot .items-table td:not(:first-child):not(:last-child) {
+    display: none;
+  }
+
+  .party-loot .item-filters {
+    flex-direction: column;
+  }
+
+  .party-loot .currency-inputs {
+    flex-direction: column;
+  }
+}

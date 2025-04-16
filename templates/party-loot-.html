@@ -1,0 +1,325 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+    <header class="sheet-header">
+      <nav class="tabs" data-group="primary">
+        <a class="item" data-tab="funds" data-group="primary">
+          <i class="fas fa-coins"></i> Funds
+        </a>
+        <a class="item" data-tab="items" data-group="primary">
+          <i class="fas fa-backpack"></i> Items
+        </a>
+      </nav>
+    </header>
+  
+    {{#if error}}
+    <div class="error-container">
+      <i class="fas fa-exclamation-circle"></i> {{error}}
+    </div>
+    {{/if}}
+  
+    {{#if isLoading}}
+    <div class="loading-container">
+      <div class="loader"></div>
+    </div>
+    {{else}}
+    <section class="sheet-content">
+      <!-- Funds Tab -->
+      <div class="tab-content" data-tab="funds">
+        {{#unless showFundHistory}}
+        <div class="funds-display">
+          <div class="fund">
+            <i class="fas fa-gem plat"></i> Platinum: {{funds.platinum}}
+          </div>
+          <div class="fund">
+            <i class="fas fa-gem gold"></i> Gold: {{funds.gold}}
+          </div>
+          <div class="fund">
+            <i class="fas fa-gem silver"></i> Silver: {{funds.silver}}
+          </div>
+          <div class="fund">
+            <i class="fas fa-gem copper"></i> Copper: {{funds.copper}}
+          </div>
+        </div>
+  
+        <form class="fund-form">
+          <div class="currency-inputs">
+            <div class="currency-input">
+              <label for="platInput">Platinum</label>
+              <input type="number" min="0" id="platInput" name="platinum" placeholder="0">
+            </div>
+            <div class="currency-input">
+              <label for="goldInput">Gold</label>
+              <input type="number" min="0" id="goldInput" name="gold" placeholder="0">
+            </div>
+            <div class="currency-input">
+              <label for="silverInput">Silver</label>
+              <input type="number" min="0" id="silverInput" name="silver" placeholder="0">
+            </div>
+            <div class="currency-input">
+              <label for="copperInput">Copper</label>
+              <input type="number" min="0" id="copperInput" name="copper" placeholder="0">
+            </div>
+          </div>
+          
+          <div class="description-input">
+            <label for="fundDesc">Description</label>
+            <textarea id="fundDesc" name="description" rows="2" placeholder="What is this transaction for?"></textarea>
+          </div>
+          
+          <div class="fund-buttons">
+            <button type="button" class="add-funds">
+              <i class="fas fa-plus-circle"></i> Add Funds
+            </button>
+            <button type="button" class="remove-funds">
+              <i class="fas fa-minus-circle"></i> Remove Funds
+            </button>
+            <button type="button" class="view-fund-history">
+              <i class="fas fa-history"></i> View History
+            </button>
+          </div>
+        </form>
+        {{else}}
+        <!-- Fund History View -->
+        <div class="fund-history-header">
+          <div>Date</div>
+          <div>Description</div>
+          <div>Amount</div>
+          <div></div>
+        </div>
+        <div class="fund-history">
+          {{#each fundHistory}}
+          <div class="fund-history-entry {{#if this.subtract}}subtract{{else}}add{{/if}}">
+            <div>{{this.date}}</div>
+            <div>{{this.desc}}</div>
+            <div>
+              {{#if this.subtract}}-{{/if}}{{this.amount}}
+              {{#if this.conversion}}
+              <div class="currency-breakdown">
+                <i class="fas fa-calculator"></i>
+              </div>
+              {{/if}}
+            </div>
+            <div class="fund-history-actions">
+              <i class="fas fa-trash delete-fund" data-id="{{this.id}}"></i>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        
+        <div class="pagination">
+          <button type="button" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Funds
+          </button>
+          <div class="pagination-buttons">
+            <button class="prev-page" {{#if (eq currentPage 1)}}disabled{{/if}}>
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span>Page {{currentPage}} of {{totalPages}}</span>
+            <button class="next-page" {{#if (eq currentPage totalPages)}}disabled{{/if}}>
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+        {{/unless}}
+      </div>
+  
+      <!-- Items Tab -->
+      <div class="tab-content" data-tab="items">
+        <div class="item-form">
+          <h3>Add Item</h3>
+          <div class="item-form-grid">
+            <div class="item-form-row">
+              <label for="itemName">Item Name *</label>
+              <input type="text" id="itemName" name="name" placeholder="Longsword" required>
+            </div>
+            <div class="item-form-row">
+              <label for="itemOwner">Owner *</label>
+              <input type="text" id="itemOwner" name="owner" placeholder="Character name" required>
+            </div>
+            <div class="item-form-row">
+              <label for="itemQuantity">Quantity</label>
+              <input type="number" id="itemQuantity" name="quantity" min="1" value="1">
+            </div>
+            <div class="item-form-row">
+              <label for="itemSource">Source *</label>
+              <input type="text" id="itemSource" name="source" placeholder="Where it came from" required>
+            </div>
+          </div>
+  
+          <button type="button" class="show-advanced-options">
+            <i class="fas fa-chevron-down"></i> Show Advanced Options
+          </button>
+          
+          <div id="advancedOptionsSection" style="display: none;" class="advanced-options">
+            <div class="item-form-grid">
+              <div class="item-form-row">
+                <label for="itemType">Item Type</label>
+                <select id="itemType" name="itemType">
+                  <option value="">Select Type</option>
+                  <option value="1">Weapon</option>
+                  <option value="2">Armor</option>
+                  <option value="3">Adventuring Gear</option>
+                  <option value="4">Tool</option>
+                  <option value="5">Mount or Vehicle</option>
+                  <option value="9">Magic Item</option>
+                </select>
+              </div>
+              <div class="item-form-row">
+                <label for="itemRarity">Rarity</label>
+                <select id="itemRarity" name="itemRarity">
+                  <option value="">Common</option>
+                  <option value="1" style="color: #ffffff;">Common</option>
+                  <option value="2" style="color: #1eff00;">Uncommon</option>
+                  <option value="3" style="color: #0070dd;">Rare</option>
+                  <option value="4" style="color: #a335ee;">Very Rare</option>
+                  <option value="5" style="color: #ff8000;">Legendary</option>
+                  <option value="6" style="color: #e6cc80;">Artifact</option>
+                </select>
+              </div>
+              <div class="item-form-row">
+                <label for="itemValue">Value</label>
+                <div style="display: flex; gap: 5px;">
+                  <input type="number" id="itemValue" name="value" min="0" placeholder="0" style="flex: 2;">
+                  <select id="valueCurrency" name="valueCurrency" style="flex: 1;">
+                    <option value="2">Gold</option>
+                    <option value="1">Platinum</option>
+                    <option value="3">Silver</option>
+                    <option value="4">Copper</option>
+                  </select>
+                </div>
+              </div>
+              <div class="item-form-row">
+                <label for="itemTags">Tags (comma separated)</label>
+                <input type="text" id="itemTags" name="tags" placeholder="Weapon, Magic, Sword">
+              </div>
+            </div>
+            
+            <div class="item-form-row">
+              <label for="itemDescription">Description</label>
+              <textarea id="itemDescription" name="description" rows="3" placeholder="Item description and properties..."></textarea>
+            </div>
+          </div>
+          
+          <button type="button" class="add-item-button">
+            <i class="fas fa-plus-circle"></i> Add Item
+          </button>
+        </div>
+  
+        <div class="items-header">
+          <div class="item-filters">
+            <input type="text" id="itemSearch" placeholder="Search items...">
+            <select id="itemOwnerFilter">
+              <option value="">All Owners</option>
+              {{#each owners}}
+              <option value="{{this}}">{{this}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div>
+            <button type="button" class="refresh-data">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+  
+        <div class="total-item-value">
+          <p>Total Item Value: {{#if totalItem.platinum}}{{totalItem.platinum}} Platinum,{{/if}} {{#if totalItem.gold}}{{totalItem.gold}} Gold,{{/if}} {{#if totalItem.silver}}{{totalItem.silver}} Silver,{{/if}} {{#if totalItem.copper}}{{totalItem.copper}} Copper{{/if}}</p>
+        </div>
+  
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th class="item-name-header">Item</th>
+              <th class="item-owner-header">Owner</th>
+              <th class="item-quantity-header">Qty</th>
+              <th class="item-source-header">Source</th>
+              <th class="item-value-header">Value</th>
+              <th class="item-actions-header">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each items}}
+            <tr class="item-row" data-item-id="{{this.id}}">
+              <td>
+                <div class="item-name">
+                  <button type="button" class="toggle-details">
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                  <i class="fas {{this.icon_class}} {{#if this.color_code}}item-icon{{/if}}" {{#if this.color_code}}style="color: {{this.color_code}}"{{/if}}></i>
+                  {{this.name}}
+                </div>
+                <div class="item-details-row" id="details-{{this.id}}" style="display: none;">
+                  <div class="item-details">
+                    <div class="item-details-grid">
+                      <div class="item-detail">
+                        <strong>Type:</strong> {{this.item_type}}
+                      </div>
+                      <div class="item-detail">
+                        <strong>Rarity:</strong> 
+                        <span {{#if this.color_code}}style="color: {{this.color_code}}"{{/if}}>{{this.rarity}}</span>
+                      </div>
+                      <div class="item-detail">
+                        <strong>Source:</strong> {{this.source}}
+                      </div>
+                      <div class="item-detail">
+                        <strong>Value:</strong> {{this.value}} {{this.value_type}}
+                      </div>
+                    </div>
+                    <div class="item-description">
+                      <strong>Description:</strong>
+                      <p>{{this.description}}</p>
+                    </div>
+                    {{#if this.tags}}
+                    <div class="item-tags">
+                      <strong>Tags:</strong>
+                      <p>{{this.tags}}</p>
+                    </div>
+                    {{/if}}
+                  </div>
+                </div>
+              </td>
+              <td>{{this.owner}}</td>
+              <td>{{this.quantity}}</td>
+              <td>{{this.source}}</td>
+              <td>{{this.value}} {{this.value_type}}</td>
+              <td>
+                <div class="item-actions">
+                  <button type="button" class="action-button sell-button" {{#unless this.value}}disabled{{/unless}} title="Sell Item">
+                    <i class="fas fa-coins"></i>
+                  </button>
+                  <button type="button" class="action-button edit-button" title="Edit Item">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button type="button" class="action-button delete-button" title="Delete Item">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+  
+        {{#unless items.length}}
+        <div class="empty-list">
+          <p class="text-center">No items found. Add some items to your inventory!</p>
+        </div>
+        {{/unless}}
+  
+        <div class="pagination">
+          <div class="pagination-info">
+            Showing {{items.length}} items
+          </div>
+          <div class="pagination-buttons">
+            <button type="button" class="prev-page" {{#if (eq currentPage 1)}}disabled{{/if}}>
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span>Page {{currentPage}} of {{totalPages}}</span>
+            <button type="button" class="next-page" {{#if (eq currentPage totalPages)}}disabled{{/if}}>
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    {{/if}}
+  </form>
