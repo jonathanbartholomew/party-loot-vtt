@@ -779,22 +779,27 @@ Hooks.once("ready", async () => {
     }
   }
 
-  // Attach button to scene controls
+  // Add the Party Loot button to scene controls as its own group
   Hooks.on("getSceneControlButtons", (controls) => {
-    const tokenControls = controls.find((c) => c.name === "token");
-    if (!tokenControls) return;
-
-    tokenControls.tools.push({
+    controls.push({
       name: "partyloot",
       title: "Party Loot",
       icon: "fas fa-coins",
+      layer: "controls",
       visible: game.user.isGM,
-      onClick: () => new PartyLootApp().render(true),
-      button: true,
+      tools: [
+        {
+          name: "open",
+          title: "Open Party Loot",
+          icon: "fas fa-coins",
+          button: true,
+          onClick: () => new PartyLootApp().render(true),
+        },
+      ],
     });
   });
 
-  // Attach sidebar button
+  // Keep the settings tab button as well
   Hooks.on("renderSidebarTab", (app, html) => {
     if (app.options.id !== "settings") return;
     const button = $(`

@@ -5,40 +5,46 @@
   color: #f0f0f0;
 }
 
-h2 {
+h2,
+h3 {
   border-bottom: 1px solid #a07d00 !important;
+  padding-bottom: 10px;
   margin-bottom: 10px;
 }
 
 /* Make all placeholders white */
 ::placeholder {
-  color: white !important;
+  color: #ffffff8f !important;
   opacity: 0.7;
 }
 
 /* For older browsers that use different pseudoelements */
 ::-webkit-input-placeholder {
   /* WebKit browsers */
-  color: white !important;
+  color: #ffffff8f !important;
   opacity: 0.7;
 }
 :-moz-placeholder {
   /* Mozilla Firefox 4 to 18 */
-  color: white !important;
+  color: #ffffff8f !important;
   opacity: 0.7;
 }
 ::-moz-placeholder {
   /* Mozilla Firefox 19+ */
-  color: white !important;
+  color: #ffffff8f !important;
   opacity: 0.7;
 }
 :-ms-input-placeholder {
   /* Internet Explorer 10+ */
-  color: white !important;
+  color: #ffffff8f !important;
   opacity: 0.7;
 }
 
 button:hover {
+  box-shadow: 0 0 5px #a07d00 !important;
+}
+
+*:focus {
   box-shadow: 0 0 5px #a07d00 !important;
 }
 
@@ -424,6 +430,11 @@ button:hover {
   color: #000;
 }
 
+.party-loot .total-item-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 .party-loot .add-item-button {
   background: #336633;
   border: 1px solid #449944;
@@ -432,6 +443,8 @@ button:hover {
   padding: 5px 15px;
   cursor: pointer;
   transition: all 0.2s ease;
+  max-width: 300px;
+  margin-top: 10px;
 }
 
 .party-loot .add-item-button:hover {
