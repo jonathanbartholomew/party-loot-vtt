@@ -1,26 +1,14 @@
 <form class="{{cssClass}} flexcol" autocomplete="off">
-    <header class="sheet-header">
-      <nav class="tabs" data-group="primary">
-        <a class="item" data-tab="funds" data-group="primary">
-          <i class="fas fa-coins"></i> Funds
-        </a>
-        <a class="item" data-tab="items" data-group="primary">
-          <i class="fas fa-backpack"></i> Items
-        </a>
-      </nav>
-    </header>
+  <header class="sheet-header">
+    <h2 class="window-title">Party Loot</h2>
+  </header>
   
     {{#if error}}
     <div class="error-container">
       <i class="fas fa-exclamation-circle"></i> {{error}}
     </div>
     {{/if}}
-  
-    {{#if isLoading}}
-    <div class="loading-container">
-      <div class="loader"></div>
-    </div>
-    {{else}}
+
     <section class="sheet-content">
       <!-- Funds Tab -->
       <div class="tab-content" data-tab="funds">
@@ -321,5 +309,4 @@
         </div>
       </div>
     </section>
-    {{/if}}
   </form>

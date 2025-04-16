@@ -9,13 +9,6 @@ class PartyLootApp extends Application {
       template: "modules/party-loot/templates/party-loot.html",
       width: 800,
       height: 700,
-      tabs: [
-        {
-          navSelector: ".tabs",
-          contentSelector: ".tab-content",
-          initial: "funds",
-        },
-      ],
       dragDrop: [{ dragSelector: ".item-row", dropSelector: null }],
       resizable: true,
       minimizable: true,
@@ -32,7 +25,6 @@ class PartyLootApp extends Application {
     this.filteredItems = [];
     this.currentPage = 1;
     this.itemsPerPage = 10;
-    this.isLoading = true;
     this.error = null;
 
     // Set up API connection details
@@ -51,7 +43,6 @@ class PartyLootApp extends Application {
       console.log("Starting data load...");
       this.loadData().catch((err) => {
         console.error("Unhandled error in loadData:", err);
-        this.isLoading = false;
         this.error = "Unexpected error loading data";
         this.render();
       });
@@ -59,15 +50,10 @@ class PartyLootApp extends Application {
   }
 
   render(force = false, options = {}) {
-    console.log("Render called with isLoading:", this.isLoading);
     return super.render(force, options);
   }
 
   async getData() {
-    console.log("getData called, isLoading:", this.isLoading);
-
-    // Force isLoading to be a boolean (sometimes it might be undefined or null)
-    const loadingState = this.isLoading === true;
     console.log("Actual loading state being used:", loadingState);
 
     return {
@@ -78,7 +64,6 @@ class PartyLootApp extends Application {
           (this.currentPage - 1) * this.itemsPerPage,
           this.currentPage * this.itemsPerPage
         ) || [],
-      isLoading: loadingState, // Use the explicitly checked boolean
       error: this.error,
       totalPages:
         Math.ceil((this.filteredItems?.length || 0) / this.itemsPerPage) || 1,
@@ -90,9 +75,6 @@ class PartyLootApp extends Application {
 
   activateListeners(html) {
     super.activateListeners(html);
-
-    // Tabs
-    html.find(".tabs .item").click(this._onTabClick.bind(this));
 
     // Fund buttons
     html.find(".add-funds").click(this._onAddFunds.bind(this));
@@ -122,11 +104,6 @@ class PartyLootApp extends Application {
     html.find(".refresh-data").click(this._onRefreshData.bind(this));
   }
 
-  _onTabClick(event) {
-    const tab = event.currentTarget.dataset.tab;
-    this.activateTab(tab);
-  }
-
   async _onAddFunds(event) {
     event.preventDefault();
 
@@ -148,7 +125,6 @@ class PartyLootApp extends Application {
       return;
     }
 
-    this.isLoading = true;
     this.render();
 
     try {
@@ -171,8 +147,6 @@ class PartyLootApp extends Application {
       console.error("Error adding funds:", error);
       ui.notifications.error("Failed to add funds");
     }
-
-    this.isLoading = false;
     this.render();
   }
 
@@ -196,8 +170,6 @@ class PartyLootApp extends Application {
       ui.notifications.error("Please enter a description");
       return;
     }
-
-    this.isLoading = true;
     this.render();
 
     try {
@@ -220,8 +192,6 @@ class PartyLootApp extends Application {
       console.error("Error removing funds:", error);
       ui.notifications.error("Failed to remove funds");
     }
-
-    this.isLoading = false;
     this.render();
   }
 
@@ -253,8 +223,6 @@ class PartyLootApp extends Application {
       ui.notifications.error("Name, owner, and source are required");
       return;
     }
-
-    this.isLoading = true;
     this.render();
 
     try {
@@ -281,8 +249,6 @@ class PartyLootApp extends Application {
       console.error("Error adding item:", error);
       ui.notifications.error("Failed to add item");
     }
-
-    this.isLoading = false;
     this.render();
   }
 
@@ -309,8 +275,6 @@ class PartyLootApp extends Application {
     ) {
       return;
     }
-
-    this.isLoading = true;
     this.render();
 
     try {
@@ -323,8 +287,6 @@ class PartyLootApp extends Application {
       console.error("Error deleting item:", error);
       ui.notifications.error("Failed to delete item");
     }
-
-    this.isLoading = false;
     this.render();
   }
 
@@ -435,7 +397,6 @@ class PartyLootApp extends Application {
   async _onRefreshData(event) {
     if (event) event.preventDefault();
 
-    this.isLoading = true;
     this.render();
 
     try {
@@ -444,7 +405,6 @@ class PartyLootApp extends Application {
       console.error("Error refreshing data:", error);
       this.error = error.message || "Failed to refresh data";
     } finally {
-      this.isLoading = false;
       this.render();
     }
   }
@@ -476,8 +436,6 @@ class PartyLootApp extends Application {
       console.error("Error loading data:", error);
       this.error = error.message || "Failed to load data from Party Loot API";
     } finally {
-      console.log("Setting isLoading to false");
-      this.isLoading = false;
       this.render();
 
       // Additional DOM manipulation as a failsafe

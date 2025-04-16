@@ -440,6 +440,28 @@
   margin-top: 5px;
 }
 
+.party-loot .funds-section,
+.party-loot .items-section {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.party-loot .funds-section h3,
+.party-loot .items-section h3 {
+  margin-top: 0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+/* You might want to adjust the height of the app */
+.party-loot {
+  height: auto;
+  min-height: 700px;
+}
+
 .party-loot .currency-breakdown .currency {
   display: inline-flex;
   align-items: center;
