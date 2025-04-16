@@ -681,7 +681,6 @@ Hooks.once("init", () => {
 
   game.settings.register("party-loot", "userId", {
     name: "User ID",
-    hint: "Your Party Loot user ID",
     scope: "world",
     config: false,
     type: Number,
@@ -690,7 +689,6 @@ Hooks.once("init", () => {
 
   game.settings.register("party-loot", "userGroupId", {
     name: "User Group ID",
-    hint: "Your Party Loot user group ID",
     scope: "world",
     config: false,
     type: Number,
@@ -707,98 +705,55 @@ Hooks.once("init", () => {
   });
 });
 
-Hooks.on("getSceneControlButtons", (controls) => {
-  // Add a new button to the scene controls
-  controls.push({
-    name: "partyloot",
-    title: "Party Loot",
-    icon: "fas fa-coins", // Using FontAwesome icon
-    visible: true,
-    button: true,
-    onClick: () => {
-      // Check if API is configured
-      const apiUrl = game.settings.get("party-loot", "apiUrl");
-      const apiToken = game.settings.get("party-loot", "apiToken");
-
-      if (!apiUrl || !apiToken) {
-        ui.notifications.warn(
-          "Please configure the Party Loot API settings first"
-        );
-        return;
-      }
-
-      // Open the Party Loot app
-      new PartyLootApp().render(true);
-    },
-  });
-});
-
-// Add Party Loot button to sidebar
-Hooks.on("renderSidebarTab", async (app, html) => {
-  if (app.options.id == "settings") {
-    const button = $(`
-        <div class="party-loot-button flexrow">
-          <button type="button">
-            <i class="fas fa-coins"></i> Party Loot
-          </button>
-        </div>
-      `);
-
-    button.find("button").click((ev) => {
-      ev.preventDefault();
-      // Check if API is configured
-      const apiUrl = game.settings.get("party-loot", "apiUrl");
-      const apiToken = game.settings.get("party-loot", "apiToken");
-
-      if (!apiUrl || !apiToken) {
-        ui.notifications.warn(
-          "Please configure the Party Loot API settings first"
-        );
-        return;
-      }
-
-      // Open the Party Loot app
-      new PartyLootApp().render(true);
-    });
-
-    html.find(".directory-footer").append(button);
-  }
-});
-
-// Initialize the API connection on ready
 Hooks.once("ready", async () => {
   const apiUrl = game.settings.get("party-loot", "apiUrl");
   const apiToken = game.settings.get("party-loot", "apiToken");
 
   if (apiUrl && apiToken) {
     try {
-      // Authenticate with the API to get user and group IDs
       const response = await fetch(`${apiUrl}/api/foundry/authenticate`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ apiToken }),
       });
 
       if (response.ok) {
         const data = await response.json();
-
         if (data.success) {
-          // Store the user and group IDs for future API calls
           game.settings.set("party-loot", "userId", data.userId);
           game.settings.set("party-loot", "userGroupId", data.userGroupId);
           game.settings.set("party-loot", "campaignId", data.campaignId);
-
-          console.log("Party Loot: Successfully authenticated with API");
-        } else {
-          console.error("Party Loot: API authentication failed", data.error);
+          console.log("Party Loot: Authenticated");
         }
-      } else {
-        console.error("Party Loot: API connection failed", response.statusText);
       }
-    } catch (error) {
-      console.error("Party Loot: API connection error", error);
+    } catch (e) {
+      console.error("Party Loot: API error", e);
     }
   }
+
+  // Attach button to scene controls
+  Hooks.on("getSceneControlButtons", (controls) => {
+    controls.push({
+      name: "partyloot",
+      title: "Party Loot",
+      icon: "fas fa-coins",
+      visible: true,
+      button: true,
+      onClick: () => new PartyLootApp().render(true),
+    });
+  });
+
+  // Attach sidebar button
+  Hooks.on("renderSidebarTab", (app, html) => {
+    if (app.options.id !== "settings") return;
+    const button = $(`
+      <div class="party-loot-button flexrow">
+        <button type="button">
+          <i class="fas fa-coins"></i> Party Loot
+        </button>
+      </div>
+    `);
+    button.find("button").click(() => new PartyLootApp().render(true));
+    html.find(".directory-footer").append(button);
+  });
 });
