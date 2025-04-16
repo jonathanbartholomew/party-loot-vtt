@@ -5,9 +5,67 @@
   color: #f0f0f0;
 }
 
+h2 {
+  border-bottom: 1px solid #a07d00 !important;
+  margin-bottom: 10px;
+}
+
+/* Make all placeholders white */
+::placeholder {
+  color: white !important;
+  opacity: 0.7;
+}
+
+/* For older browsers that use different pseudoelements */
+::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: white !important;
+  opacity: 0.7;
+}
+:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: white !important;
+  opacity: 0.7;
+}
+::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: white !important;
+  opacity: 0.7;
+}
+:-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: white !important;
+  opacity: 0.7;
+}
+
+button:hover {
+  box-shadow: 0 0 5px #a07d00 !important;
+}
+
+.refresh-data {
+  color: #fff !important;
+}
+
+.plat {
+  color: #8b8b8b;
+}
+
+.gold {
+  color: #ffd700;
+}
+
+.silver {
+  color: #f0f0f0;
+}
+
+.copper {
+  color: #cd7f32;
+}
+
 .party-loot .window-content {
   background: #1e1e1e;
-  padding: 0;
+  padding: 1.5rem;
+  color: #fff;
 }
 
 /* Header and tabs */
@@ -166,6 +224,11 @@
   gap: 10px;
 }
 
+.party-loot .item-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .party-loot .item-filters input,
 .party-loot .item-filters select {
   background: rgba(0, 0, 0, 0.3);
@@ -217,7 +280,6 @@
 
 .party-loot .item-row {
   background: rgba(0, 0, 0, 0.2);
-  transition: background 0.2s ease;
   cursor: pointer;
 }
 
@@ -353,6 +415,15 @@
   margin-right: 5px;
 }
 
+.party-loot option {
+  color: #000;
+}
+
+.party-loot option:hover {
+  background: #bd9a00;
+  color: #000;
+}
+
 .party-loot .add-item-button {
   background: #336633;
   border: 1px solid #449944;
@@ -438,6 +509,11 @@
   flex-wrap: wrap;
   gap: 5px;
   margin-top: 5px;
+}
+
+.party-loot .currency-inputs {
+  display: flex;
+  gap: 10px;
 }
 
 .party-loot .funds-section,
