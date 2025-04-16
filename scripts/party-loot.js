@@ -708,7 +708,7 @@ Hooks.once("init", () => {
     hint: "Return Token from authenticate API call",
     scope: "world",
     config: true,
-    type: Number,
+    type: String,
     default: 0,
   });
 });
