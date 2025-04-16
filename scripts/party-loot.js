@@ -733,13 +733,16 @@ Hooks.once("ready", async () => {
 
   // Attach button to scene controls
   Hooks.on("getSceneControlButtons", (controls) => {
-    controls.push({
+    const tokenControls = controls.find((c) => c.name === "token");
+    if (!tokenControls) return;
+
+    tokenControls.tools.push({
       name: "partyloot",
       title: "Party Loot",
       icon: "fas fa-coins",
-      visible: true,
-      button: true,
+      visible: game.user.isGM,
       onClick: () => new PartyLootApp().render(true),
+      button: true,
     });
   });
 
