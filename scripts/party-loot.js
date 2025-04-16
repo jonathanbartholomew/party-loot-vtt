@@ -66,7 +66,7 @@ class PartyLootApp extends Application {
       totalPages:
         Math.ceil((this.filteredItems?.length || 0) / this.itemsPerPage) || 1,
       currentPage: this.currentPage,
-      showFundHistory: false,
+      showFundHistory: this.showFundHistory || false,
       totalItem: this.calculateTotalItemValue(),
     };
   }
@@ -78,6 +78,7 @@ class PartyLootApp extends Application {
     html.find(".add-funds").click(this._onAddFunds.bind(this));
     html.find(".remove-funds").click(this._onRemoveFunds.bind(this));
     html.find(".view-fund-history").click(this._onViewFundHistory.bind(this));
+    html.find(".back-button").click(this._onBackToFunds.bind(this));
 
     // Items
     html.find(".add-item").click(this._onAddItem.bind(this));
@@ -196,6 +197,12 @@ class PartyLootApp extends Application {
   _onViewFundHistory(event) {
     event.preventDefault();
     this.showFundHistory = true;
+    this.render();
+  }
+
+  _onBackToFunds(event) {
+    event.preventDefault();
+    this.showFundHistory = false;
     this.render();
   }
 

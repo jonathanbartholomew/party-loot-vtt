@@ -68,6 +68,10 @@ button:hover {
   color: #cd7f32;
 }
 
+input {
+  color: #fff !important;
+}
+
 label {
   font-size: 1rem;
 }
