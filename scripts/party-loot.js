@@ -39,21 +39,48 @@ class PartyLootApp extends Application {
     this.apiUrl = game.settings.get("party-loot", "apiUrl");
     this.token = game.settings.get("party-loot", "token");
 
+    // Add debug info
+    console.log("PartyLootApp initialized with:", {
+      apiUrl: this.apiUrl,
+      hasToken: !!this.token,
+      campaignId: game.settings.get("party-loot", "campaignId"),
+    });
+
     // Load data when initialized
-    setTimeout(() => this.loadData(), 500);
+    setTimeout(() => {
+      console.log("Starting data load...");
+      this.loadData().catch((err) => {
+        console.error("Unhandled error in loadData:", err);
+        this.isLoading = false;
+        this.error = "Unexpected error loading data";
+        this.render();
+      });
+    }, 500);
+  }
+
+  render(force = false, options = {}) {
+    console.log("Render called with isLoading:", this.isLoading);
+    return super.render(force, options);
   }
 
   async getData() {
+    console.log("getData called, isLoading:", this.isLoading);
+
+    // Make sure filteredItems is defined
+    if (!this.filteredItems) {
+      this.filteredItems = this.items || [];
+    }
+
     return {
-      funds: this.funds,
-      fundHistory: this.fundHistory,
+      funds: this.funds || { platinum: 0, gold: 0, silver: 0, copper: 0 },
+      fundHistory: this.fundHistory || [],
       items: this.filteredItems.slice(
         (this.currentPage - 1) * this.itemsPerPage,
         this.currentPage * this.itemsPerPage
       ),
       isLoading: this.isLoading,
       error: this.error,
-      totalPages: Math.ceil(this.filteredItems.length / this.itemsPerPage),
+      totalPages: Math.ceil(this.filteredItems.length / this.itemsPerPage) || 1,
       currentPage: this.currentPage,
       showFundHistory: false,
       totalItem: this.calculateTotalItemValue(),
@@ -422,7 +449,6 @@ class PartyLootApp extends Application {
   }
 
   // API Methods
-
   async loadData() {
     try {
       // Load all data in parallel
@@ -440,13 +466,18 @@ class PartyLootApp extends Application {
       this._filterAndSearchItems(this.searchTerm, this.ownerFilter);
 
       this.error = null;
+      console.log("Data loaded successfully:", {
+        funds: fundsData,
+        items: itemsData.length,
+      });
     } catch (error) {
       console.error("Error loading data:", error);
       this.error = error.message || "Failed to load data from Party Loot API";
     } finally {
-      // Make sure isLoading is set to false even if there's an error
+      console.log("Setting isLoading to false");
       this.isLoading = false;
       this.render();
+      console.log("Render called after loading data");
     }
   }
 
