@@ -703,6 +703,14 @@ Hooks.once("init", () => {
     type: Number,
     default: 0,
   });
+  game.settings.register("party-loot", "token", {
+    name: "API Auth Token",
+    hint: "Return Token from authenticate API call",
+    scope: "world",
+    config: true,
+    type: Number,
+    default: 0,
+  });
 });
 
 Hooks.once("ready", async () => {
