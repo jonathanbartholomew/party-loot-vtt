@@ -2,7 +2,7 @@
   "name": "party-loot",
   "title": "Party Loot",
   "description": "Track your party's inventory and funds with connection to the Party Loot web service.",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Party Loot App",
   "minimumCoreVersion": "0.8.0",
   "compatibility": {
@@ -29,6 +29,6 @@
   },
   "url": "https://github.com/jonathanbartholomew/party-loot-vtt",
   "manifest": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/module.json",
-  "download": "https://github.com/jonathanbartholomew/party-loot-vtt/archive/refs/tags/v1.0.0.zip",
+  "download": "https://github.com/jonathanbartholomew/party-loot-vtt/archive/refs/tags/v2.0.0.zip",
   "readme": "https://raw.githubusercontent.com/jonathanbartholomew/party-loot-vtt/main/README.md"
 }
