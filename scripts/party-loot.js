@@ -457,7 +457,7 @@ class PartyLootApp extends Application {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiToken}`,
+          Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
         },
       }
     );
@@ -483,7 +483,7 @@ class PartyLootApp extends Application {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiToken}`,
+          Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
         },
       }
     );
@@ -518,7 +518,7 @@ class PartyLootApp extends Application {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiToken}`,
+        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
       },
     });
 
@@ -550,7 +550,7 @@ class PartyLootApp extends Application {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiToken}`,
+        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
       },
       body: JSON.stringify(payload),
     });
@@ -583,7 +583,7 @@ class PartyLootApp extends Application {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiToken}`,
+        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
       },
       body: JSON.stringify(payload),
     });
@@ -604,7 +604,7 @@ class PartyLootApp extends Application {
     const response = await fetch(`${this.apiUrl}/api/items/${itemId}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${this.apiToken}`,
+        Authorization: `Bearer ${game.settings.get("party-loot", "token")}`,
       },
     });
 
@@ -723,6 +723,7 @@ Hooks.once("ready", async () => {
           game.settings.set("party-loot", "userId", data.userId);
           game.settings.set("party-loot", "userGroupId", data.userGroupId);
           game.settings.set("party-loot", "campaignId", data.campaignId);
+          game.settings.set("party-loot", "token", data.token);
           console.log("Party Loot: Authenticated");
         }
       }
