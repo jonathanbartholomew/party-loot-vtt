@@ -54,8 +54,6 @@ class PartyLootApp extends Application {
   }
 
   async getData() {
-    console.log("Actual loading state being used:", loadingState);
-
     return {
       funds: this.funds || { platinum: 0, gold: 0, silver: 0, copper: 0 },
       fundHistory: this.fundHistory || [],
