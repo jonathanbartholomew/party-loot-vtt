@@ -37,7 +37,7 @@ class PartyLootApp extends Application {
 
     // Set up API connection details
     this.apiUrl = game.settings.get("party-loot", "apiUrl");
-    this.token = game.settings.get("party-loot", "apiToken");
+    this.token = game.settings.get("party-loot", "token");
 
     // Load data when initialized
     setTimeout(() => this.loadData(), 500);
