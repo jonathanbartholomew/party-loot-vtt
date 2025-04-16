@@ -707,6 +707,32 @@ Hooks.once("init", () => {
   });
 });
 
+Hooks.on("getSceneControlButtons", (controls) => {
+  // Add a new button to the scene controls
+  controls.push({
+    name: "partyloot",
+    title: "Party Loot",
+    icon: "fas fa-coins", // Using FontAwesome icon
+    visible: true,
+    button: true,
+    onClick: () => {
+      // Check if API is configured
+      const apiUrl = game.settings.get("party-loot", "apiUrl");
+      const apiToken = game.settings.get("party-loot", "apiToken");
+
+      if (!apiUrl || !apiToken) {
+        ui.notifications.warn(
+          "Please configure the Party Loot API settings first"
+        );
+        return;
+      }
+
+      // Open the Party Loot app
+      new PartyLootApp().render(true);
+    },
+  });
+});
+
 // Add Party Loot button to sidebar
 Hooks.on("renderSidebarTab", async (app, html) => {
   if (app.options.id == "settings") {
