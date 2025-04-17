@@ -286,160 +286,212 @@ class PartyLootApp extends Application {
       return;
     }
 
-    // Create a dialog for editing
-    new Dialog({
-      title: `Edit ${item.name}`,
-      content: `
-        <form>
-          <div class="form-group">
-            <label for="name">Item Name *</label>
-            <input type="text" id="name" name="name" value="${
-              item.name
-            }" required>
-          </div>
-          <div class="form-group">
-            <label for="owner">Owner *</label>
-            <input type="text" id="owner" name="owner" value="${
-              item.owner
-            }" required>
-          </div>
-          <div class="form-group">
-            <label for="quantity">Quantity</label>
-            <input type="number" id="quantity" name="quantity" value="${
-              item.quantity
-            }" min="1">
-          </div>
-          <div class="form-group">
-            <label for="source">Source *</label>
-            <input type="text" id="source" name="source" value="${
-              item.source
-            }" required>
-          </div>
-          <div class="form-group">
-            <label for="itemType">Item Type</label>
-            <select id="itemType" name="itemType">
-              <option value="">Select Type</option>
-              <option value="1" ${
-                item.item_type_id == 1 ? "selected" : ""
-              }>Weapon</option>
-              <option value="2" ${
-                item.item_type_id == 2 ? "selected" : ""
-              }>Armor</option>
-              <option value="3" ${
-                item.item_type_id == 3 ? "selected" : ""
-              }>Adventuring Gear</option>
-              <option value="4" ${
-                item.item_type_id == 4 ? "selected" : ""
-              }>Tool</option>
-              <option value="5" ${
-                item.item_type_id == 5 ? "selected" : ""
-              }>Mount or Vehicle</option>
-              <option value="9" ${
-                item.item_type_id == 9 ? "selected" : ""
-              }>Magic Item</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="itemRarity">Rarity</label>
-            <select id="itemRarity" name="itemRarity">
-              <option value="">Select Rarity</option>
-              <option value="1" ${
-                item.item_rarity_id == 1 ? "selected" : ""
-              }>Common</option>
-              <option value="2" ${
-                item.item_rarity_id == 2 ? "selected" : ""
-              }>Uncommon</option>
-              <option value="3" ${
-                item.item_rarity_id == 3 ? "selected" : ""
-              }>Rare</option>
-              <option value="4" ${
-                item.item_rarity_id == 4 ? "selected" : ""
-              }>Very Rare</option>
-              <option value="5" ${
-                item.item_rarity_id == 5 ? "selected" : ""
-              }>Legendary</option>
-              <option value="6" ${
-                item.item_rarity_id == 6 ? "selected" : ""
-              }>Artifact</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="value">Value</label>
-            <div style="display: flex; gap: 5px;">
-              <input type="number" id="value" name="value" value="${
-                item.value || 0
-              }" min="0" style="flex: 2;">
-              <select id="valueCurrency" name="valueCurrency" style="flex: 1;">
-                <option value="2" ${
-                  item.value_type_id == 2 ? "selected" : ""
-                }>Gold</option>
-                <option value="1" ${
-                  item.value_type_id == 1 ? "selected" : ""
-                }>Platinum</option>
-                <option value="3" ${
-                  item.value_type_id == 3 ? "selected" : ""
-                }>Silver</option>
-                <option value="4" ${
-                  item.value_type_id == 4 ? "selected" : ""
-                }>Copper</option>
+    // Show loading indicator
+    this.render();
+
+    try {
+      // Fetch item types and rarities for dropdowns
+      let itemTypes = [];
+      let itemRarities = [];
+
+      try {
+        // Fetch item types from API
+        const typeResponse = await fetch(
+          `${this.apiUrl}/api/items/item-types`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+            },
+          }
+        );
+
+        if (typeResponse.ok) {
+          itemTypes = await typeResponse.json();
+        }
+
+        // Fetch item rarities from API
+        const rarityResponse = await fetch(
+          `${this.apiUrl}/api/items/item-rarities`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+            },
+          }
+        );
+
+        if (rarityResponse.ok) {
+          itemRarities = await rarityResponse.json();
+        }
+      } catch (error) {
+        console.error("Error fetching item metadata:", error);
+        // Fallback to default options
+        itemTypes = [
+          { id: 1, name: "Weapon" },
+          { id: 2, name: "Armor" },
+          { id: 3, name: "Adventuring Gear" },
+          { id: 4, name: "Tool" },
+          { id: 5, name: "Mount or Vehicle" },
+          { id: 9, name: "Magic Item" },
+        ];
+
+        itemRarities = [
+          { id: 1, name: "Common", color_code: "#ffffff" },
+          { id: 2, name: "Uncommon", color_code: "#1eff00" },
+          { id: 3, name: "Rare", color_code: "#0070dd" },
+          { id: 4, name: "Very Rare", color_code: "#a335ee" },
+          { id: 5, name: "Legendary", color_code: "#ff8000" },
+          { id: 6, name: "Artifact", color_code: "#e6cc80" },
+        ];
+      }
+
+      // Create type options HTML
+      let typeOptionsHTML = `<option value="">Select Type</option>`;
+      itemTypes.forEach((type) => {
+        typeOptionsHTML += `<option value="${type.id}" ${
+          item.item_type_id == type.id ? "selected" : ""
+        }>${type.name}</option>`;
+      });
+
+      // Create rarity options HTML
+      let rarityOptionsHTML = `<option value="">Select Rarity</option>`;
+      itemRarities.forEach((rarity) => {
+        rarityOptionsHTML += `<option value="${rarity.id}" 
+          style="color: ${rarity.color_code};" 
+          ${item.item_rarity_id == rarity.id ? "selected" : ""}>${
+          rarity.name
+        }</option>`;
+      });
+
+      // Create currency options HTML
+      const currencyOptions = [
+        { id: 2, name: "Gold" },
+        { id: 1, name: "Platinum" },
+        { id: 3, name: "Silver" },
+        { id: 4, name: "Copper" },
+      ];
+
+      let currencyOptionsHTML = "";
+      currencyOptions.forEach((currency) => {
+        currencyOptionsHTML += `<option value="${currency.id}" ${
+          item.value_type_id == currency.id ? "selected" : ""
+        }>${currency.name}</option>`;
+      });
+
+      // Create a dialog for editing
+      new Dialog({
+        title: `Edit ${item.name}`,
+        content: `
+          <form class="edit-form">
+            <div class="form-group">
+              <label for="name">Item Name *</label>
+              <input type="text" id="name" name="name" value="${
+                item.name
+              }" required>
+            </div>
+            <div class="form-group">
+              <label for="owner">Owner *</label>
+              <input type="text" id="owner" name="owner" value="${
+                item.owner
+              }" required>
+            </div>
+            <div class="form-group">
+              <label for="quantity">Quantity</label>
+              <input type="number" id="quantity" name="quantity" value="${
+                item.quantity
+              }" min="1">
+            </div>
+            <div class="form-group">
+              <label for="source">Source *</label>
+              <input type="text" id="source" name="source" value="${
+                item.source
+              }" required>
+            </div>
+            <div class="form-group">
+              <label for="itemType">Item Type</label>
+              <select id="itemType" name="itemType">
+                ${typeOptionsHTML}
               </select>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="tags">Tags (comma separated)</label>
-            <input type="text" id="tags" name="tags" value="${
-              item.tags || ""
-            }" placeholder="Weapon, Magic, Sword">
-          </div>
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" rows="3">${
-              item.description || ""
-            }</textarea>
-          </div>
-        </form>
-      `,
-      buttons: {
-        save: {
-          icon: '<i class="fas fa-save"></i>',
-          label: "Save",
-          callback: async (html) => {
-            const form = html.find("form")[0];
+            <div class="form-group">
+              <label for="itemRarity">Rarity</label>
+              <select id="itemRarity" name="itemRarity">
+                ${rarityOptionsHTML}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="value">Value</label>
+              <div style="display: flex; gap: 5px;">
+                <input type="number" id="value" name="value" value="${
+                  item.value || 0
+                }" min="0" style="flex: 2;">
+                <select id="valueCurrency" name="valueCurrency" style="flex: 1;">
+                  ${currencyOptionsHTML}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tags">Tags (comma separated)</label>
+              <input type="text" id="tags" name="tags" value="${
+                item.tags || ""
+              }" placeholder="Weapon, Magic, Sword">
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" rows="3">${
+                item.description || ""
+              }</textarea>
+            </div>
+          </form>
+        `,
+        buttons: {
+          save: {
+            icon: '<i class="fas fa-save"></i>',
+            label: "Save",
+            callback: async (html) => {
+              const form = html.find("form")[0];
 
-            const updateData = {
-              id: itemId,
-              name: form.querySelector("#name").value,
-              owner: form.querySelector("#owner").value,
-              quantity: parseInt(form.querySelector("#quantity").value) || 1,
-              source: form.querySelector("#source").value,
-              item_type_id: form.querySelector("#itemType").value || null,
-              item_rarity_id: form.querySelector("#itemRarity").value || null,
-              value: form.querySelector("#value").value || null,
-              value_type_id: form.querySelector("#valueCurrency").value || null,
-              tags: form.querySelector("#tags").value,
-              description: form.querySelector("#description").value || "",
-            };
+              const updateData = {
+                id: itemId,
+                name: form.querySelector("#name").value,
+                owner: form.querySelector("#owner").value,
+                quantity: parseInt(form.querySelector("#quantity").value) || 1,
+                source: form.querySelector("#source").value,
+                item_type_id: form.querySelector("#itemType").value || null,
+                item_rarity_id: form.querySelector("#itemRarity").value || null,
+                value: form.querySelector("#value").value || null,
+                value_type_id:
+                  form.querySelector("#valueCurrency").value || null,
+                tags: form.querySelector("#tags").value,
+                description: form.querySelector("#description").value || "",
+              };
 
-            try {
-              await this.updateItem(updateData);
-              ui.notifications.info("Item updated successfully!");
-              this.loadData();
-            } catch (error) {
-              console.error("Error updating item:", error);
-              ui.notifications.error("Failed to update item");
-            }
+              try {
+                await this.updateItem(updateData);
+                ui.notifications.info("Item updated successfully!");
+                this.loadData();
+              } catch (error) {
+                console.error("Error updating item:", error);
+                ui.notifications.error("Failed to update item");
+              }
+            },
+          },
+          cancel: {
+            icon: '<i class="fas fa-times"></i>',
+            label: "Cancel",
           },
         },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel",
-        },
-      },
-      default: "save",
-      width: 500,
-    }).render(true);
+        default: "save",
+        width: 500,
+      }).render(true);
+    } catch (error) {
+      console.error("Error preparing edit dialog:", error);
+      ui.notifications.error("Failed to prepare edit dialog");
+    } finally {
+      this.render();
+    }
   }
-
   // Add this method to your PartyLootApp class
   async _onSellItem(event) {
     event.preventDefault();
@@ -467,7 +519,7 @@ class PartyLootApp extends Application {
     new Dialog({
       title: `Sell ${item.name}`,
       content: `
-        <form>
+        <form class="sell-form">
           <div class="form-group">
             <label for="sellQuantity">Quantity to Sell:</label>
             <input type="number" id="sellQuantity" name="quantity" value="${item.quantity}" min="1" max="${item.quantity}">
@@ -498,43 +550,51 @@ class PartyLootApp extends Application {
 
             try {
               // First, add the funds from the sale
-              const currencyType = item.value_type_id || "2"; // Default to gold
+              // Important: Initialize all currency values to 0
               const fundData = {
                 user_id: game.settings.get("party-loot", "userId"),
+                platinum: 0,
+                gold: 0,
+                silver: 0,
+                copper: 0,
                 description: description,
                 subtract: false,
                 user_group_id: game.settings.get("party-loot", "userGroupId"),
                 campaign_id: game.settings.get("party-loot", "campaignId"),
               };
 
-              // Set the appropriate currency type
+              // Set the appropriate currency type based on the item's value_type_id
+              // Make sure to use string comparison since IDs might be strings
+              const currencyType = String(item.value_type_id) || "2"; // Default to gold
+
+              console.log(
+                "Selling item with currency type:",
+                currencyType,
+                "for amount:",
+                salePrice
+              );
+
               switch (currencyType) {
                 case "1":
                   fundData.platinum = salePrice;
-                  fundData.gold = 0;
-                  fundData.silver = 0;
-                  fundData.copper = 0;
                   break;
                 case "2":
-                  fundData.platinum = 0;
                   fundData.gold = salePrice;
-                  fundData.silver = 0;
-                  fundData.copper = 0;
                   break;
                 case "3":
-                  fundData.platinum = 0;
-                  fundData.gold = 0;
                   fundData.silver = salePrice;
-                  fundData.copper = 0;
                   break;
                 case "4":
-                  fundData.platinum = 0;
-                  fundData.gold = 0;
-                  fundData.silver = 0;
                   fundData.copper = salePrice;
+                  break;
+                default:
+                  // If no currency type is recognized, default to gold
+                  fundData.gold = salePrice;
+                  console.log("Unrecognized currency type, defaulting to gold");
                   break;
               }
 
+              console.log("Adding fund entry:", fundData);
               await this.addFundEntry(fundData);
 
               // Then update the item quantity or delete it if all were sold

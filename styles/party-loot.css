@@ -509,6 +509,16 @@ img {
   background: #449944;
 }
 
+/*for every input box under the class of .sell-form the color should be black*/
+.party-loot .sell-form input,
+.party-loot .edit-form input {
+  color: #000 !important;
+}
+.party-loot .sell-form select,
+.party-loot .edit-form select {
+  color: #000 !important;
+}
+
 /* Action buttons */
 .party-loot .action-button {
   background: none;
