@@ -81,9 +81,11 @@ class PartyLootApp extends Application {
     html.find(".back-button").click(this._onBackToFunds.bind(this));
 
     // Items
-    html.find(".add-item").click(this._onAddItem.bind(this));
+    html.find(".add-item-button").click(this._onAddItem.bind(this));
     html.find(".item-row").click(this._onItemClick.bind(this));
-    html.find(".delete-item").click(this._onDeleteItem.bind(this));
+    html.find(".delete-button").click(this._onDeleteItem.bind(this));
+    html.find(".edit-button").click(this._onEditItem.bind(this));
+    html.find(".sell-button").click(this._onSellItem.bind(this));
     html.find(".toggle-details").click(this._onToggleDetails.bind(this));
 
     // Pagination
@@ -210,24 +212,27 @@ class PartyLootApp extends Application {
     event.preventDefault();
 
     // Get values from form
-    const form = event.currentTarget.closest("form");
-    const name = form.querySelector("#itemName").value;
-    const owner = form.querySelector("#itemOwner").value;
-    const quantity = parseInt(form.querySelector("#itemQuantity").value) || 1;
-    const source = form.querySelector("#itemSource").value;
+    const form = this.element.find(".item-form");
+    const name = form.find("#itemName").val();
+    const owner = form.find("#itemOwner").val();
+    const quantity = parseInt(form.find("#itemQuantity").val()) || 1;
+    const source = form.find("#itemSource").val();
 
-    // Get advanced fields if available
-    const itemType = form.querySelector("#itemType")?.value;
-    const itemRarity = form.querySelector("#itemRarity")?.value;
-    const itemValue = form.querySelector("#itemValue")?.value;
-    const valueCurrency = form.querySelector("#valueCurrency")?.value || "2"; // Default to gold
-    const itemTags = form.querySelector("#itemTags")?.value;
-    const itemDescription = form.querySelector("#itemDescription")?.value;
+    // Get advanced fields
+    const itemType = form.find("#itemType").val();
+    const itemRarity = form.find("#itemRarity").val();
+    const itemValue = form.find("#itemValue").val();
+    const valueCurrency = form.find("#valueCurrency").val() || "2"; // Default to gold
+    const itemTags = form.find("#itemTags").val();
+    const itemDescription = form.find("#itemDescription").val();
 
     if (!name || !owner || !source) {
-      ui.notifications.error("Name, owner, and source are required");
+      ui.notifications.error(
+        game.i18n.localize("PARTYLOOT.Items.Error.RequiredFields")
+      );
       return;
     }
+
     this.render();
 
     try {
@@ -245,16 +250,321 @@ class PartyLootApp extends Application {
       });
 
       // Reset form
-      form.reset();
-      ui.notifications.info("Item added successfully!");
+      form.find("input, textarea, select").val("");
+      form.find("#itemQuantity").val("1"); // Reset quantity to 1
+      ui.notifications.info(
+        game.i18n.localize("PARTYLOOT.Items.Info.ItemAdded")
+      );
 
       // Refresh data
       await this.loadData();
     } catch (error) {
       console.error("Error adding item:", error);
-      ui.notifications.error("Failed to add item");
+      ui.notifications.error(
+        game.i18n.localize("PARTYLOOT.Items.Error.AddError")
+      );
     }
     this.render();
+  }
+
+  // Add this method to your PartyLootApp class
+  async _onEditItem(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const itemRow = event.currentTarget.closest(".item-row");
+    const itemId = itemRow.dataset.itemId;
+
+    // Find the item in our data
+    const item = this.items.find((i) => i.id == itemId);
+
+    if (!item) {
+      ui.notifications.error(
+        game.i18n.localize("PARTYLOOT.Items.Error.ItemNotFound")
+      );
+      return;
+    }
+
+    // Create an edit dialog
+    const html = await renderTemplate(
+      "modules/party-loot/templates/item-edit.html",
+      {
+        item: item,
+        itemTypes: [
+          { id: "1", name: "Weapon" },
+          { id: "2", name: "Armor" },
+          { id: "3", name: "Adventuring Gear" },
+          { id: "4", name: "Tool" },
+          { id: "5", name: "Mount or Vehicle" },
+          { id: "9", name: "Magic Item" },
+        ],
+        rarities: [
+          { id: "1", name: "Common", color: "#ffffff" },
+          { id: "2", name: "Uncommon", color: "#1eff00" },
+          { id: "3", name: "Rare", color: "#0070dd" },
+          { id: "4", name: "Very Rare", color: "#a335ee" },
+          { id: "5", name: "Legendary", color: "#ff8000" },
+          { id: "6", name: "Artifact", color: "#e6cc80" },
+        ],
+        currencies: [
+          { id: "1", name: "Platinum" },
+          { id: "2", name: "Gold" },
+          { id: "3", name: "Silver" },
+          { id: "4", name: "Copper" },
+        ],
+      }
+    );
+
+    // Create a dialog for editing
+    new Dialog({
+      title: game.i18n.localize("PARTYLOOT.Items.EditItem"),
+      content: html,
+      buttons: {
+        save: {
+          icon: '<i class="fas fa-save"></i>',
+          label: game.i18n.localize("PARTYLOOT.Items.Save"),
+          callback: async (html) => {
+            const form = html.find("form")[0];
+            const formData = new FormData(form);
+
+            const updateData = {
+              id: itemId,
+              name: formData.get("name"),
+              owner: formData.get("owner"),
+              quantity: parseInt(formData.get("quantity")) || 1,
+              source: formData.get("source"),
+              item_type_id: formData.get("itemType") || null,
+              item_rarity_id: formData.get("itemRarity") || null,
+              value: formData.get("value") || null,
+              value_type_id: formData.get("valueCurrency") || null,
+              tags: formData.get("tags")
+                ? formData
+                    .get("tags")
+                    .split(",")
+                    .map((tag) => tag.trim())
+                : [],
+              description: formData.get("description") || "",
+            };
+
+            try {
+              await this.updateItem(updateData);
+              ui.notifications.info(
+                game.i18n.localize("PARTYLOOT.Items.Info.ItemUpdated")
+              );
+              this.loadData();
+            } catch (error) {
+              console.error("Error updating item:", error);
+              ui.notifications.error(
+                game.i18n.localize("PARTYLOOT.Items.Error.UpdateError")
+              );
+            }
+          },
+        },
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: game.i18n.localize("PARTYLOOT.Items.Cancel"),
+        },
+      },
+      default: "save",
+      width: 500,
+    }).render(true);
+  }
+
+  // Add this method to your PartyLootApp class
+  async _onSellItem(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const itemRow = event.currentTarget.closest(".item-row");
+    const itemId = itemRow.dataset.itemId;
+
+    // Find the item in our data
+    const item = this.items.find((i) => i.id == itemId);
+
+    if (!item) {
+      ui.notifications.error(
+        game.i18n.localize("PARTYLOOT.Items.Error.ItemNotFound")
+      );
+      return;
+    }
+
+    if (!item.value || !item.value_type) {
+      ui.notifications.warn("Cannot sell an item with no value");
+      return;
+    }
+
+    // Create a dialog for selling
+    const html = await renderTemplate(
+      "modules/party-loot/templates/item-sell.html",
+      {
+        item: item,
+        quantity: item.quantity,
+        maxQuantity: item.quantity,
+        sellPrice: item.value, // Default to full value
+      }
+    );
+
+    new Dialog({
+      title: `Sell ${item.name}`,
+      content: html,
+      buttons: {
+        sell: {
+          icon: '<i class="fas fa-coins"></i>',
+          label: "Sell",
+          callback: async (html) => {
+            const form = html.find("form")[0];
+            const quantityToSell =
+              parseInt(form.querySelector("#sellQuantity").value) || 1;
+            const salePrice =
+              parseInt(form.querySelector("#sellPrice").value) || 0;
+            const description =
+              form.querySelector("#sellDescription").value ||
+              `Sold ${item.name}`;
+
+            try {
+              // First, add the funds from the sale
+              const currencyType = item.value_type_id || "2"; // Default to gold
+              const fundData = {
+                description: description,
+                subtract: false,
+              };
+
+              // Set the appropriate currency type
+              switch (currencyType) {
+                case "1":
+                  fundData.platinum = salePrice;
+                  break;
+                case "2":
+                  fundData.gold = salePrice;
+                  break;
+                case "3":
+                  fundData.silver = salePrice;
+                  break;
+                case "4":
+                  fundData.copper = salePrice;
+                  break;
+              }
+
+              await this.addFundEntry(fundData);
+
+              // Then update the item quantity or delete it if all were sold
+              if (quantityToSell >= item.quantity) {
+                await this.deleteItem(itemId);
+                ui.notifications.info(
+                  `Sold all ${item.name} for ${salePrice} ${item.value_type}`
+                );
+              } else {
+                const newQuantity = item.quantity - quantityToSell;
+                await this.updateItem({
+                  ...item,
+                  quantity: newQuantity,
+                });
+                ui.notifications.info(
+                  `Sold ${quantityToSell} ${item.name} for ${salePrice} ${item.value_type}`
+                );
+              }
+
+              // Refresh the data
+              await this.loadData();
+            } catch (error) {
+              console.error("Error selling item:", error);
+              ui.notifications.error("Failed to sell item");
+            }
+          },
+        },
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: "Cancel",
+        },
+      },
+      default: "sell",
+    }).render(true);
+  }
+
+  // Update _onDeleteItem to use the right selector
+  async _onDeleteItem(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Get item ID
+    const itemId = event.currentTarget.closest(".item-row").dataset.itemId;
+    const item = this.items.find((i) => i.id == itemId);
+
+    if (!item) {
+      ui.notifications.error(
+        game.i18n.localize("PARTYLOOT.Items.Error.ItemNotFound")
+      );
+      return;
+    }
+
+    const confirmDelete = await Dialog.confirm({
+      title: game.i18n.localize("PARTYLOOT.Items.ConfirmDeletion"),
+      content: game.i18n.format("PARTYLOOT.Items.ConfirmDeletion", {
+        name: item.name,
+      }),
+      yes: () => true,
+      no: () => false,
+      defaultYes: false,
+    });
+
+    if (!confirmDelete) return;
+
+    this.render();
+
+    try {
+      await this.deleteItem(itemId);
+      ui.notifications.info(
+        game.i18n.localize("PARTYLOOT.Items.Info.ItemDeleted")
+      );
+
+      // Refresh data
+      await this.loadData();
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      ui.notifications.error(
+        game.i18n.localize("PARTYLOOT.Items.Error.DeleteError")
+      );
+    }
+    this.render();
+  }
+
+  // Add this method to update an item
+  async updateItem(itemData) {
+    if (!this.apiUrl || !this.token) {
+      throw new Error("API URL and token must be configured in settings");
+    }
+
+    const userId = game.settings.get("party-loot", "userId");
+    const userGroupId = game.settings.get("party-loot", "userGroupId");
+    const campaignId = game.settings.get("party-loot", "campaignId");
+
+    const payload = {
+      ...itemData,
+      user_id: userId,
+      user_group_id: userGroupId,
+      campaign_id: campaignId,
+    };
+
+    try {
+      const response = await fetch(`${this.apiUrl}/api/items/${itemData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update item");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Update item error:", error);
+      throw error;
+    }
   }
 
   _onItemClick(event) {

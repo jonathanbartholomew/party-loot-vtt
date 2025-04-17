@@ -183,6 +183,14 @@ img {
   box-shadow: none;
 }
 
+.back-button {
+  max-width: fit-content;
+  padding: 0.2rem 1rem;
+  color: white;
+  background-color: #a17e018f;
+  border: none;
+}
+
 /* Fund History */
 .party-loot .fund-history {
   margin: 10px 0;
@@ -212,6 +220,29 @@ img {
 .party-loot .fund-history-entry > div {
   flex: 1;
   padding: 8px 5px;
+}
+
+.party-loot .date-header,
+.party-loot .col-date {
+  flex-basis: 20%;
+}
+.party-loot .desc-header,
+.party-loot .col-desc {
+  flex-basis: 50%;
+}
+
+.party-loot .col-desc {
+  word-break: break-word;
+}
+
+.party-loot .amount-header,
+.party-loot .col-amount {
+  flex-basis: 20%;
+}
+
+.party-loot .action-header,
+.party-loot .col-actions {
+  flex-basis: 10%;
 }
 
 .party-loot .fund-history-entry.subtract {

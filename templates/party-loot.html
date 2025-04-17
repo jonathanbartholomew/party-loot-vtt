@@ -69,17 +69,17 @@
         {{else}}
         <!-- Fund History View -->
         <div class="fund-history-header">
-          <div>Date</div>
-          <div>Description</div>
-          <div>Amount</div>
-          <div></div>
+          <div class="date-header">Date</div>
+          <div class="desc-header">Description</div>
+          <div class="amount-header">Amount</div>
+          <div class="action-header"></div>
         </div>
         <div class="fund-history">
           {{#each fundHistory}}
           <div class="fund-history-entry {{#if this.subtract}}subtract{{else}}add{{/if}}">
-            <div>{{this.date}}</div>
-            <div>{{this.desc}}</div>
-            <div>
+            <div class="col-date">{{this.date}}</div>
+            <div class="col-desc">{{this.desc}}</div>
+            <div class="col-amount">
               {{#if this.subtract}}-{{/if}}{{this.amount}}
               {{#if this.conversion}}
               <div class="currency-breakdown">
@@ -87,7 +87,7 @@
               </div>
               {{/if}}
             </div>
-            <div class="fund-history-actions">
+            <div class="fund-history-actions col-actions">
               <i class="fas fa-trash delete-fund" data-id="{{this.id}}"></i>
             </div>
           </div>
@@ -102,7 +102,7 @@
             <button class="prev-page" {{#if (eq currentPage 1)}}disabled{{/if}}>
               <i class="fas fa-chevron-left"></i> Previous
             </button>
-            <span>Page {{currentPage}} of {{totalPages}}</span>
+            <span style="width: fit-content;">Page {{currentPage}} of {{totalPages}}</span>
             <button class="next-page" {{#if (eq currentPage totalPages)}}disabled{{/if}}>
               Next <i class="fas fa-chevron-right"></i>
             </button>
@@ -302,7 +302,7 @@
             <button type="button" class="prev-page" {{#if (eq currentPage 1)}}disabled{{/if}}>
               <i class="fas fa-chevron-left"></i> Previous
             </button>
-            <span>Page {{currentPage}} of {{totalPages}}</span>
+            <span style="min-width: max-content;">Page {{currentPage}} of {{totalPages}}</span>
             <button type="button" class="next-page" {{#if (eq currentPage totalPages)}}disabled{{/if}}>
               Next <i class="fas fa-chevron-right"></i>
             </button>
