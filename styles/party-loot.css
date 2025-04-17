@@ -222,6 +222,10 @@ img {
   padding: 8px 5px;
 }
 
+#fundDesc {
+  color: #fff !important;
+}
+
 .party-loot .date-header,
 .party-loot .col-date {
   flex-basis: 20% !important;
@@ -510,12 +514,12 @@ img {
 }
 
 /*for every input box under the class of .sell-form the color should be black*/
-.party-loot .sell-form input,
-.party-loot .edit-form input {
+.sell-form input,
+.edit-form input {
   color: #000 !important;
 }
-.party-loot .sell-form select,
-.party-loot .edit-form select {
+.sell-form select,
+.edit-form select {
   color: #000 !important;
 }
 

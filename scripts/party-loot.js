@@ -53,7 +53,72 @@ class PartyLootApp extends Application {
     return super.render(force, options);
   }
 
+  async _populateItemTypeOptions() {
+    // Fetch item types and rarities for dropdowns
+    this.itemTypes = [];
+    this.itemRarities = [];
+
+    try {
+      // Fetch item types from API
+      const typeResponse = await fetch(`${this.apiUrl}/api/items/item-types`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
+
+      if (typeResponse.ok) {
+        this.itemTypes = await typeResponse.json();
+      }
+
+      // Fetch item rarities from API
+      const rarityResponse = await fetch(
+        `${this.apiUrl}/api/items/item-rarities`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+        }
+      );
+
+      if (rarityResponse.ok) {
+        this.itemRarities = await rarityResponse.json();
+      }
+    } catch (error) {
+      console.error("Error fetching item metadata:", error);
+      // Fallback to default options
+      this.itemTypes = [
+        { id: 1, name: "Weapon" },
+        { id: 2, name: "Armor" },
+        { id: 3, name: "Adventuring Gear" },
+        { id: 4, name: "Tool" },
+        { id: 5, name: "Mount or Vehicle" },
+        { id: 9, name: "Magic Item" },
+      ];
+
+      this.itemRarities = [
+        { id: 1, name: "Common", color_code: "#ffffff" },
+        { id: 2, name: "Uncommon", color_code: "#1eff00" },
+        { id: 3, name: "Rare", color_code: "#0070dd" },
+        { id: 4, name: "Very Rare", color_code: "#a335ee" },
+        { id: 5, name: "Legendary", color_code: "#ff8000" },
+        { id: 6, name: "Artifact", color_code: "#e6cc80" },
+      ];
+    }
+
+    return {
+      types: this.itemTypes,
+      rarities: this.itemRarities,
+    };
+  }
+
   async getData() {
+    // If we don't have item types and rarities yet, fetch them
+    if (!this.itemTypes || !this.itemRarities) {
+      await this._populateItemTypeOptions();
+    }
+
     return {
       funds: this.funds || { platinum: 0, gold: 0, silver: 0, copper: 0 },
       fundHistory: this.fundHistory || [],
@@ -68,6 +133,9 @@ class PartyLootApp extends Application {
       currentPage: this.currentPage,
       showFundHistory: this.showFundHistory || false,
       totalItem: this.calculateTotalItemValue(),
+      itemTypes: this.itemTypes || [],
+      itemRarities: this.itemRarities || [],
+      owners: [...new Set(this.items?.map((item) => item.owner) || [])],
     };
   }
 
@@ -860,16 +928,20 @@ class PartyLootApp extends Application {
   async loadData() {
     try {
       // Load all data in parallel
-      const [fundsData, fundHistoryData, itemsData] = await Promise.all([
-        this.fetchFunds(),
-        this.fetchFundHistory(),
-        this.fetchItems(),
-      ]);
+      const [fundsData, fundHistoryData, itemsData, itemMetadata] =
+        await Promise.all([
+          this.fetchFunds(),
+          this.fetchFundHistory(),
+          this.fetchItems(),
+          this._populateItemTypeOptions(),
+        ]);
 
       this.funds = fundsData;
       this.fundHistory = fundHistoryData;
       this.items = itemsData;
       this.filteredItems = itemsData; // Ensure filteredItems is initialized
+
+      // itemMetadata already set by _populateItemTypeOptions
 
       // Apply current filters
       this._filterAndSearchItems(this.searchTerm, this.ownerFilter);
@@ -878,24 +950,14 @@ class PartyLootApp extends Application {
       console.log("Data loaded successfully:", {
         funds: fundsData,
         items: itemsData.length,
+        itemTypes: this.itemTypes?.length,
+        itemRarities: this.itemRarities?.length,
       });
     } catch (error) {
       console.error("Error loading data:", error);
       this.error = error.message || "Failed to load data from Party Loot API";
     } finally {
       this.render();
-
-      // Additional DOM manipulation as a failsafe
-      setTimeout(() => {
-        if (this.element) {
-          const loadingEl = this.element.find(".loading-container");
-          if (loadingEl.length) {
-            console.log("Manually removing loading indicator");
-            loadingEl.remove();
-            this.element.find(".sheet-content").show();
-          }
-        }
-      }, 500);
     }
   }
 

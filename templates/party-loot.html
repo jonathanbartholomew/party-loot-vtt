@@ -1,6 +1,6 @@
 <form class="{{cssClass}} flexcol" autocomplete="off">
   <header class="sheet-header">
-    <img src="https://test.partylootapp.com/images/party-loot-logo-no-bg.png" alt="Party Loot" class="sheet-header-image">
+    <a href="https://www.partylootapp.com" target="_blank"><img src="https://test.partylootapp.com/images/party-loot-logo-no-bg.png" alt="Party Loot" class="sheet-header-image"></a>
     <h2 class="window-title">Party Loot</h2>
   </header>
   
@@ -144,24 +144,18 @@
                 <label for="itemType">Item Type</label>
                 <select id="itemType" name="itemType">
                   <option value="">Select Type</option>
-                  <option value="1">Weapon</option>
-                  <option value="2">Armor</option>
-                  <option value="3">Adventuring Gear</option>
-                  <option value="4">Tool</option>
-                  <option value="5">Mount or Vehicle</option>
-                  <option value="9">Magic Item</option>
+                  {{#each itemTypes}}
+                  <option value="{{this.id}}">{{this.name}}</option>
+                  {{/each}}
                 </select>
               </div>
               <div class="item-form-row">
                 <label for="itemRarity">Rarity</label>
                 <select id="itemRarity" name="itemRarity">
-                  <option value="">Common</option>
-                  <option value="1" style="color: #ffffff;">Common</option>
-                  <option value="2" style="color: #1eff00;">Uncommon</option>
-                  <option value="3" style="color: #0070dd;">Rare</option>
-                  <option value="4" style="color: #a335ee;">Very Rare</option>
-                  <option value="5" style="color: #ff8000;">Legendary</option>
-                  <option value="6" style="color: #e6cc80;">Artifact</option>
+                  <option value="">Select Rarity</option>
+                  {{#each itemRarities}}
+                  <option value="{{this.id}}" style="color: {{this.color_code}};">{{this.name}}</option>
+                  {{/each}}
                 </select>
               </div>
               <div class="item-form-row">
