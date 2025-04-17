@@ -358,78 +358,29 @@ class PartyLootApp extends Application {
     this.render();
 
     try {
-      // Fetch item types and rarities for dropdowns
-      let itemTypes = [];
-      let itemRarities = [];
-
-      try {
-        // Fetch item types from API
-        const typeResponse = await fetch(
-          `${this.apiUrl}/api/items/item-types`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
-          }
-        );
-
-        if (typeResponse.ok) {
-          itemTypes = await typeResponse.json();
-        }
-
-        // Fetch item rarities from API
-        const rarityResponse = await fetch(
-          `${this.apiUrl}/api/items/item-rarities`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
-          }
-        );
-
-        if (rarityResponse.ok) {
-          itemRarities = await rarityResponse.json();
-        }
-      } catch (error) {
-        console.error("Error fetching item metadata:", error);
-        // Fallback to default options
-        itemTypes = [
-          { id: 1, name: "Weapon" },
-          { id: 2, name: "Armor" },
-          { id: 3, name: "Adventuring Gear" },
-          { id: 4, name: "Tool" },
-          { id: 5, name: "Mount or Vehicle" },
-          { id: 9, name: "Magic Item" },
-        ];
-
-        itemRarities = [
-          { id: 1, name: "Common", color_code: "#ffffff" },
-          { id: 2, name: "Uncommon", color_code: "#1eff00" },
-          { id: 3, name: "Rare", color_code: "#0070dd" },
-          { id: 4, name: "Very Rare", color_code: "#a335ee" },
-          { id: 5, name: "Legendary", color_code: "#ff8000" },
-          { id: 6, name: "Artifact", color_code: "#e6cc80" },
-        ];
+      // Fetch item types and rarities for dropdowns if not already loaded
+      if (!this.itemTypes || !this.itemRarities) {
+        await this._populateItemTypeOptions();
       }
 
       // Create type options HTML
       let typeOptionsHTML = `<option value="">Select Type</option>`;
-      itemTypes.forEach((type) => {
-        typeOptionsHTML += `<option value="${type.id}" ${
-          item.item_type_id == type.id ? "selected" : ""
-        }>${type.name}</option>`;
+      this.itemTypes.forEach((type) => {
+        // Need to compare as strings since values from API might be strings or numbers
+        const selected =
+          String(item.item_type_id) === String(type.id) ? "selected" : "";
+        typeOptionsHTML += `<option value="${type.id}" ${selected}>${type.name}</option>`;
       });
 
       // Create rarity options HTML
       let rarityOptionsHTML = `<option value="">Select Rarity</option>`;
-      itemRarities.forEach((rarity) => {
+      this.itemRarities.forEach((rarity) => {
+        // Need to compare as strings
+        const selected =
+          String(item.item_rarity_id) === String(rarity.id) ? "selected" : "";
         rarityOptionsHTML += `<option value="${rarity.id}" 
           style="color: ${rarity.color_code};" 
-          ${item.item_rarity_id == rarity.id ? "selected" : ""}>${
-          rarity.name
-        }</option>`;
+          ${selected}>${rarity.name}</option>`;
       });
 
       // Create currency options HTML
@@ -442,9 +393,10 @@ class PartyLootApp extends Application {
 
       let currencyOptionsHTML = "";
       currencyOptions.forEach((currency) => {
-        currencyOptionsHTML += `<option value="${currency.id}" ${
-          item.value_type_id == currency.id ? "selected" : ""
-        }>${currency.name}</option>`;
+        // Need to compare as strings
+        const selected =
+          String(item.value_type_id) === String(currency.id) ? "selected" : "";
+        currencyOptionsHTML += `<option value="${currency.id}" ${selected}>${currency.name}</option>`;
       });
 
       // Create a dialog for editing
@@ -578,115 +530,167 @@ class PartyLootApp extends Application {
       return;
     }
 
-    if (!item.value || !item.value_type) {
-      ui.notifications.warn("Cannot sell an item with no value");
-      return;
-    }
-
     // Create a dialog for selling
     new Dialog({
-      title: `Sell ${item.name}`,
+      title: `Sell or Give ${item.name}`,
       content: `
         <form class="sell-form">
           <div class="form-group">
-            <label for="sellQuantity">Quantity to Sell:</label>
-            <input type="number" id="sellQuantity" name="quantity" value="${item.quantity}" min="1" max="${item.quantity}">
+            <label for="sellAction">Action:</label>
+            <select id="sellAction" name="action">
+              <option value="sell">Sell Item (add funds)</option>
+              <option value="give">Give to Player (just remove item)</option>
+            </select>
           </div>
-          <div class="form-group">
-            <label for="sellPrice">Sale Price (${item.value_type}):</label>
-            <input type="number" id="sellPrice" name="price" value="${item.value}" min="0">
+          
+          <div id="sellPriceGroup">
+            <div class="form-group">
+              <label for="sellQuantity">Quantity:</label>
+              <input type="number" id="sellQuantity" name="quantity" value="${
+                item.quantity
+              }" min="1" max="${item.quantity}">
+            </div>
+            <div class="form-group">
+              <label for="sellPrice">Sale Price (${
+                item.value_type || "Gold"
+              }):</label>
+              <input type="number" id="sellPrice" name="price" value="${
+                item.value || 0
+              }" min="0">
+            </div>
           </div>
+          
           <div class="form-group">
             <label for="sellDescription">Transaction Description:</label>
-            <input type="text" id="sellDescription" name="description" value="Sold ${item.name}" placeholder="What is this transaction for?">
+            <input type="text" id="sellDescription" name="description" value="Sold ${
+              item.name
+            }" placeholder="What is this transaction for?">
           </div>
         </form>
+        
+        <script>
+          // Toggle price fields based on action
+          document.getElementById('sellAction').addEventListener('change', function() {
+            const isPriceVisible = this.value === 'sell';
+            document.getElementById('sellPriceGroup').style.display = isPriceVisible ? 'block' : 'none';
+            
+            // Update description based on action
+            const descField = document.getElementById('sellDescription');
+            if (this.value === 'give') {
+              descField.value = "Gave ${item.name} to player";
+            } else {
+              descField.value = "Sold ${item.name}";
+            }
+          });
+        </script>
       `,
       buttons: {
-        sell: {
-          icon: '<i class="fas fa-coins"></i>',
-          label: "Sell",
+        confirm: {
+          icon: '<i class="fas fa-check"></i>',
+          label: "Confirm",
           callback: async (html) => {
             const form = html.find("form")[0];
+            const action = form.querySelector("#sellAction").value;
             const quantityToSell =
               parseInt(form.querySelector("#sellQuantity").value) || 1;
-            const salePrice =
-              parseInt(form.querySelector("#sellPrice").value) || 0;
             const description =
               form.querySelector("#sellDescription").value ||
-              `Sold ${item.name}`;
+              (action === "sell"
+                ? `Sold ${item.name}`
+                : `Gave ${item.name} to player`);
 
             try {
-              // First, add the funds from the sale
-              // Important: Initialize all currency values to 0
-              const fundData = {
-                user_id: game.settings.get("party-loot", "userId"),
-                platinum: 0,
-                gold: 0,
-                silver: 0,
-                copper: 0,
-                description: description,
-                subtract: false,
-                user_group_id: game.settings.get("party-loot", "userGroupId"),
-                campaign_id: game.settings.get("party-loot", "campaignId"),
-              };
+              // If selling, add funds
+              if (action === "sell") {
+                const salePrice =
+                  parseInt(form.querySelector("#sellPrice").value) || 0;
 
-              // Set the appropriate currency type based on the item's value_type_id
-              // Make sure to use string comparison since IDs might be strings
-              const currencyType = String(item.value_type_id) || "2"; // Default to gold
+                // Add funds from the sale
+                const fundData = {
+                  user_id: game.settings.get("party-loot", "userId"),
+                  platinum: 0,
+                  gold: 0,
+                  silver: 0,
+                  copper: 0,
+                  description: description,
+                  subtract: false,
+                  user_group_id: game.settings.get("party-loot", "userGroupId"),
+                  campaign_id: game.settings.get("party-loot", "campaignId"),
+                };
 
-              console.log(
-                "Selling item with currency type:",
-                currencyType,
-                "for amount:",
-                salePrice
-              );
-
-              switch (currencyType) {
-                case "1":
-                  fundData.platinum = salePrice;
-                  break;
-                case "2":
-                  fundData.gold = salePrice;
-                  break;
-                case "3":
-                  fundData.silver = salePrice;
-                  break;
-                case "4":
-                  fundData.copper = salePrice;
-                  break;
-                default:
-                  // If no currency type is recognized, default to gold
-                  fundData.gold = salePrice;
-                  console.log("Unrecognized currency type, defaulting to gold");
-                  break;
-              }
-
-              console.log("Adding fund entry:", fundData);
-              await this.addFundEntry(fundData);
-
-              // Then update the item quantity or delete it if all were sold
-              if (quantityToSell >= item.quantity) {
-                await this.deleteItem(itemId);
-                ui.notifications.info(
-                  `Sold all ${item.name} for ${salePrice} ${item.value_type}`
+                // Set the appropriate currency type based on the item's value_type_id
+                const currencyType = String(item.value_type_id) || "2"; // Default to gold
+                console.log(
+                  "Selling item with currency type:",
+                  currencyType,
+                  "for amount:",
+                  salePrice
                 );
+
+                switch (currencyType) {
+                  case "1":
+                    fundData.platinum = salePrice;
+                    break;
+                  case "2":
+                    fundData.gold = salePrice;
+                    break;
+                  case "3":
+                    fundData.silver = salePrice;
+                    break;
+                  case "4":
+                    fundData.copper = salePrice;
+                    break;
+                  default:
+                    fundData.gold = salePrice;
+                    break;
+                }
+
+                await this.addFundEntry(fundData);
+
+                // Update or delete the item based on quantity
+                if (quantityToSell >= item.quantity) {
+                  await this.deleteItem(itemId);
+                  ui.notifications.info(
+                    `Sold all ${item.name} for ${salePrice} ${
+                      item.value_type || "gold"
+                    }`
+                  );
+                } else {
+                  const newQuantity = item.quantity - quantityToSell;
+                  await this.updateItem({
+                    ...item,
+                    quantity: newQuantity,
+                  });
+                  ui.notifications.info(
+                    `Sold ${quantityToSell} ${item.name} for ${salePrice} ${
+                      item.value_type || "gold"
+                    }`
+                  );
+                }
               } else {
-                const newQuantity = item.quantity - quantityToSell;
-                await this.updateItem({
-                  ...item,
-                  quantity: newQuantity,
-                });
-                ui.notifications.info(
-                  `Sold ${quantityToSell} ${item.name} for ${salePrice} ${item.value_type}`
-                );
+                // Just remove the item (give to player)
+                if (quantityToSell >= item.quantity) {
+                  await this.deleteItem(itemId);
+                  ui.notifications.info(
+                    `Removed ${item.name} from party inventory`
+                  );
+                } else {
+                  const newQuantity = item.quantity - quantityToSell;
+                  await this.updateItem({
+                    ...item,
+                    quantity: newQuantity,
+                  });
+                  ui.notifications.info(
+                    `Removed ${quantityToSell} ${item.name} from party inventory`
+                  );
+                }
               }
 
               // Refresh the data
               await this.loadData();
             } catch (error) {
-              console.error("Error selling item:", error);
-              ui.notifications.error("Failed to sell item");
+              console.error("Error processing item:", error);
+              ui.notifications.error("Failed to process item");
             }
           },
         },
@@ -695,7 +699,8 @@ class PartyLootApp extends Application {
           label: "Cancel",
         },
       },
-      default: "sell",
+      default: "confirm",
+      width: 500,
     }).render(true);
   }
 

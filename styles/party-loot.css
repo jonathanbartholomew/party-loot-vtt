@@ -129,6 +129,10 @@ img {
   border-radius: 5px;
 }
 
+.party-loot .fund {
+  border: none !important;
+}
+
 .party-loot .funds-display .fund {
   display: flex;
   align-items: center;
