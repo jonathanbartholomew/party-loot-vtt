@@ -80,13 +80,14 @@ class PartyLootApp extends Application {
     html.find(".view-fund-history").click(this._onViewFundHistory.bind(this));
     html.find(".back-button").click(this._onBackToFunds.bind(this));
 
-    // Items
+    // Items - Fix the add-item-button selector
     html.find(".add-item-button").click(this._onAddItem.bind(this));
-    html.find(".item-row").click(this._onItemClick.bind(this));
+    html.find(".toggle-details").click(this._onToggleDetails.bind(this));
+
+    // Item actions
     html.find(".delete-button").click(this._onDeleteItem.bind(this));
     html.find(".edit-button").click(this._onEditItem.bind(this));
     html.find(".sell-button").click(this._onSellItem.bind(this));
-    html.find(".toggle-details").click(this._onToggleDetails.bind(this));
 
     // Pagination
     html.find(".prev-page").click(this._onPrevPage.bind(this));
@@ -285,84 +286,153 @@ class PartyLootApp extends Application {
       return;
     }
 
-    // Create an edit dialog
-    const html = await renderTemplate(
-      "modules/party-loot/templates/item-edit.html",
-      {
-        item: item,
-        itemTypes: [
-          { id: "1", name: "Weapon" },
-          { id: "2", name: "Armor" },
-          { id: "3", name: "Adventuring Gear" },
-          { id: "4", name: "Tool" },
-          { id: "5", name: "Mount or Vehicle" },
-          { id: "9", name: "Magic Item" },
-        ],
-        rarities: [
-          { id: "1", name: "Common", color: "#ffffff" },
-          { id: "2", name: "Uncommon", color: "#1eff00" },
-          { id: "3", name: "Rare", color: "#0070dd" },
-          { id: "4", name: "Very Rare", color: "#a335ee" },
-          { id: "5", name: "Legendary", color: "#ff8000" },
-          { id: "6", name: "Artifact", color: "#e6cc80" },
-        ],
-        currencies: [
-          { id: "1", name: "Platinum" },
-          { id: "2", name: "Gold" },
-          { id: "3", name: "Silver" },
-          { id: "4", name: "Copper" },
-        ],
-      }
-    );
-
     // Create a dialog for editing
     new Dialog({
-      title: game.i18n.localize("PARTYLOOT.Items.EditItem"),
-      content: html,
+      title: `Edit ${item.name}`,
+      content: `
+        <form>
+          <div class="form-group">
+            <label for="name">Item Name *</label>
+            <input type="text" id="name" name="name" value="${
+              item.name
+            }" required>
+          </div>
+          <div class="form-group">
+            <label for="owner">Owner *</label>
+            <input type="text" id="owner" name="owner" value="${
+              item.owner
+            }" required>
+          </div>
+          <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" value="${
+              item.quantity
+            }" min="1">
+          </div>
+          <div class="form-group">
+            <label for="source">Source *</label>
+            <input type="text" id="source" name="source" value="${
+              item.source
+            }" required>
+          </div>
+          <div class="form-group">
+            <label for="itemType">Item Type</label>
+            <select id="itemType" name="itemType">
+              <option value="">Select Type</option>
+              <option value="1" ${
+                item.item_type_id == 1 ? "selected" : ""
+              }>Weapon</option>
+              <option value="2" ${
+                item.item_type_id == 2 ? "selected" : ""
+              }>Armor</option>
+              <option value="3" ${
+                item.item_type_id == 3 ? "selected" : ""
+              }>Adventuring Gear</option>
+              <option value="4" ${
+                item.item_type_id == 4 ? "selected" : ""
+              }>Tool</option>
+              <option value="5" ${
+                item.item_type_id == 5 ? "selected" : ""
+              }>Mount or Vehicle</option>
+              <option value="9" ${
+                item.item_type_id == 9 ? "selected" : ""
+              }>Magic Item</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="itemRarity">Rarity</label>
+            <select id="itemRarity" name="itemRarity">
+              <option value="">Select Rarity</option>
+              <option value="1" ${
+                item.item_rarity_id == 1 ? "selected" : ""
+              }>Common</option>
+              <option value="2" ${
+                item.item_rarity_id == 2 ? "selected" : ""
+              }>Uncommon</option>
+              <option value="3" ${
+                item.item_rarity_id == 3 ? "selected" : ""
+              }>Rare</option>
+              <option value="4" ${
+                item.item_rarity_id == 4 ? "selected" : ""
+              }>Very Rare</option>
+              <option value="5" ${
+                item.item_rarity_id == 5 ? "selected" : ""
+              }>Legendary</option>
+              <option value="6" ${
+                item.item_rarity_id == 6 ? "selected" : ""
+              }>Artifact</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="value">Value</label>
+            <div style="display: flex; gap: 5px;">
+              <input type="number" id="value" name="value" value="${
+                item.value || 0
+              }" min="0" style="flex: 2;">
+              <select id="valueCurrency" name="valueCurrency" style="flex: 1;">
+                <option value="2" ${
+                  item.value_type_id == 2 ? "selected" : ""
+                }>Gold</option>
+                <option value="1" ${
+                  item.value_type_id == 1 ? "selected" : ""
+                }>Platinum</option>
+                <option value="3" ${
+                  item.value_type_id == 3 ? "selected" : ""
+                }>Silver</option>
+                <option value="4" ${
+                  item.value_type_id == 4 ? "selected" : ""
+                }>Copper</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="tags">Tags (comma separated)</label>
+            <input type="text" id="tags" name="tags" value="${
+              item.tags || ""
+            }" placeholder="Weapon, Magic, Sword">
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="3">${
+              item.description || ""
+            }</textarea>
+          </div>
+        </form>
+      `,
       buttons: {
         save: {
           icon: '<i class="fas fa-save"></i>',
-          label: game.i18n.localize("PARTYLOOT.Items.Save"),
+          label: "Save",
           callback: async (html) => {
             const form = html.find("form")[0];
-            const formData = new FormData(form);
 
             const updateData = {
               id: itemId,
-              name: formData.get("name"),
-              owner: formData.get("owner"),
-              quantity: parseInt(formData.get("quantity")) || 1,
-              source: formData.get("source"),
-              item_type_id: formData.get("itemType") || null,
-              item_rarity_id: formData.get("itemRarity") || null,
-              value: formData.get("value") || null,
-              value_type_id: formData.get("valueCurrency") || null,
-              tags: formData.get("tags")
-                ? formData
-                    .get("tags")
-                    .split(",")
-                    .map((tag) => tag.trim())
-                : [],
-              description: formData.get("description") || "",
+              name: form.querySelector("#name").value,
+              owner: form.querySelector("#owner").value,
+              quantity: parseInt(form.querySelector("#quantity").value) || 1,
+              source: form.querySelector("#source").value,
+              item_type_id: form.querySelector("#itemType").value || null,
+              item_rarity_id: form.querySelector("#itemRarity").value || null,
+              value: form.querySelector("#value").value || null,
+              value_type_id: form.querySelector("#valueCurrency").value || null,
+              tags: form.querySelector("#tags").value,
+              description: form.querySelector("#description").value || "",
             };
 
             try {
               await this.updateItem(updateData);
-              ui.notifications.info(
-                game.i18n.localize("PARTYLOOT.Items.Info.ItemUpdated")
-              );
+              ui.notifications.info("Item updated successfully!");
               this.loadData();
             } catch (error) {
               console.error("Error updating item:", error);
-              ui.notifications.error(
-                game.i18n.localize("PARTYLOOT.Items.Error.UpdateError")
-              );
+              ui.notifications.error("Failed to update item");
             }
           },
         },
         cancel: {
           icon: '<i class="fas fa-times"></i>',
-          label: game.i18n.localize("PARTYLOOT.Items.Cancel"),
+          label: "Cancel",
         },
       },
       default: "save",
@@ -394,19 +464,24 @@ class PartyLootApp extends Application {
     }
 
     // Create a dialog for selling
-    const html = await renderTemplate(
-      "modules/party-loot/templates/item-sell.html",
-      {
-        item: item,
-        quantity: item.quantity,
-        maxQuantity: item.quantity,
-        sellPrice: item.value, // Default to full value
-      }
-    );
-
     new Dialog({
       title: `Sell ${item.name}`,
-      content: html,
+      content: `
+        <form>
+          <div class="form-group">
+            <label for="sellQuantity">Quantity to Sell:</label>
+            <input type="number" id="sellQuantity" name="quantity" value="${item.quantity}" min="1" max="${item.quantity}">
+          </div>
+          <div class="form-group">
+            <label for="sellPrice">Sale Price (${item.value_type}):</label>
+            <input type="number" id="sellPrice" name="price" value="${item.value}" min="0">
+          </div>
+          <div class="form-group">
+            <label for="sellDescription">Transaction Description:</label>
+            <input type="text" id="sellDescription" name="description" value="Sold ${item.name}" placeholder="What is this transaction for?">
+          </div>
+        </form>
+      `,
       buttons: {
         sell: {
           icon: '<i class="fas fa-coins"></i>',
@@ -425,22 +500,37 @@ class PartyLootApp extends Application {
               // First, add the funds from the sale
               const currencyType = item.value_type_id || "2"; // Default to gold
               const fundData = {
+                user_id: game.settings.get("party-loot", "userId"),
                 description: description,
                 subtract: false,
+                user_group_id: game.settings.get("party-loot", "userGroupId"),
+                campaign_id: game.settings.get("party-loot", "campaignId"),
               };
 
               // Set the appropriate currency type
               switch (currencyType) {
                 case "1":
                   fundData.platinum = salePrice;
+                  fundData.gold = 0;
+                  fundData.silver = 0;
+                  fundData.copper = 0;
                   break;
                 case "2":
+                  fundData.platinum = 0;
                   fundData.gold = salePrice;
+                  fundData.silver = 0;
+                  fundData.copper = 0;
                   break;
                 case "3":
+                  fundData.platinum = 0;
+                  fundData.gold = 0;
                   fundData.silver = salePrice;
+                  fundData.copper = 0;
                   break;
                 case "4":
+                  fundData.platinum = 0;
+                  fundData.gold = 0;
+                  fundData.silver = 0;
                   fundData.copper = salePrice;
                   break;
               }
@@ -488,8 +578,9 @@ class PartyLootApp extends Application {
 
     // Get item ID
     const itemId = event.currentTarget.closest(".item-row").dataset.itemId;
-    const item = this.items.find((i) => i.id == itemId);
 
+    // Find the item to get its name for confirmation
+    const item = this.items.find((i) => i.id == itemId);
     if (!item) {
       ui.notifications.error(
         game.i18n.localize("PARTYLOOT.Items.Error.ItemNotFound")
@@ -497,11 +588,10 @@ class PartyLootApp extends Application {
       return;
     }
 
+    // Confirm deletion
     const confirmDelete = await Dialog.confirm({
-      title: game.i18n.localize("PARTYLOOT.Items.ConfirmDeletion"),
-      content: game.i18n.format("PARTYLOOT.Items.ConfirmDeletion", {
-        name: item.name,
-      }),
+      title: "Delete Item",
+      content: `Are you sure you want to delete "${item.name}"?`,
       yes: () => true,
       no: () => false,
       defaultYes: false,
@@ -509,23 +599,16 @@ class PartyLootApp extends Application {
 
     if (!confirmDelete) return;
 
-    this.render();
-
     try {
       await this.deleteItem(itemId);
-      ui.notifications.info(
-        game.i18n.localize("PARTYLOOT.Items.Info.ItemDeleted")
-      );
+      ui.notifications.info("Item deleted successfully!");
 
       // Refresh data
       await this.loadData();
     } catch (error) {
       console.error("Error deleting item:", error);
-      ui.notifications.error(
-        game.i18n.localize("PARTYLOOT.Items.Error.DeleteError")
-      );
+      ui.notifications.error("Failed to delete item");
     }
-    this.render();
   }
 
   // Add this method to update an item
@@ -534,17 +617,6 @@ class PartyLootApp extends Application {
       throw new Error("API URL and token must be configured in settings");
     }
 
-    const userId = game.settings.get("party-loot", "userId");
-    const userGroupId = game.settings.get("party-loot", "userGroupId");
-    const campaignId = game.settings.get("party-loot", "campaignId");
-
-    const payload = {
-      ...itemData,
-      user_id: userId,
-      user_group_id: userGroupId,
-      campaign_id: campaignId,
-    };
-
     try {
       const response = await fetch(`${this.apiUrl}/api/items/${itemData.id}`, {
         method: "PUT",
@@ -552,7 +624,7 @@ class PartyLootApp extends Application {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.token}`,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(itemData),
       });
 
       if (!response.ok) {

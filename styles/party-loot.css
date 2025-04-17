@@ -224,11 +224,11 @@ img {
 
 .party-loot .date-header,
 .party-loot .col-date {
-  flex-basis: 20%;
+  flex-basis: 20% !important;
 }
 .party-loot .desc-header,
 .party-loot .col-desc {
-  flex-basis: 50%;
+  flex-basis: 50% !important;
 }
 
 .party-loot .col-desc {
@@ -237,12 +237,12 @@ img {
 
 .party-loot .amount-header,
 .party-loot .col-amount {
-  flex-basis: 20%;
+  flex-basis: 20% !important;
 }
 
 .party-loot .action-header,
 .party-loot .col-actions {
-  flex-basis: 10%;
+  flex-basis: 10% !important;
 }
 
 .party-loot .fund-history-entry.subtract {
