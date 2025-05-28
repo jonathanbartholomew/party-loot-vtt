@@ -52,7 +52,7 @@ Before installing this module, you need:
 1. In Foundry VTT, go to **Game Settings** → **Configure Settings** → **Module Settings**
 2. Find **Party Loot** in the list and configure:
 
-- **API URL**: `https://test.partylootapp.com` (default - don't change unless instructed)
+- **API URL**: `https://partylootapp.com` (default - don't change unless instructed)
 - **API Token**: Paste your API token from Step 1
 - **Campaign ID**: Enter your campaign ID from Party Loot (found in your campaign settings)
 
@@ -68,7 +68,13 @@ Before installing this module, you need:
 
 Once configured, you'll see a **gold coins icon** (💰) in your scene controls toolbar on the left side of the screen. Click this to open the Party Loot interface.
 
+![image](https://github.com/user-attachments/assets/54439b0c-ec3c-470a-9d9b-a152a1ed57e0)
+
+
 ### Managing Party Funds
+
+![image](https://github.com/user-attachments/assets/c26346cf-bd5d-430a-8b7e-0dd93f9b5f68)
+
 
 **Adding Funds:**
 
