@@ -73,6 +73,9 @@ Once configured, you'll see a **gold coins icon** (💰) in your scene controls 
 
 ### Managing Party Funds
 
+![image](https://github.com/user-attachments/assets/c26346cf-bd5d-430a-8b7e-0dd93f9b5f68)
+
+
 **Adding Funds:**
 
 1. Enter amounts in any currency fields (platinum, gold, silver, copper)
