@@ -1373,32 +1373,6 @@ Hooks.once("ready", async () => {
     }
   }
 
-  // Add the Party Loot button to scene controls as its own group
-  Hooks.on("getSceneControlButtons", (controls) => {
-    controls.push({
-      name: "partyloot",
-      title: "Party Loot",
-      icon: "fas fa-coins",
-      layer: "controls",
-      visible: game.user.isGM,
-      tools: [
-        {
-          name: "open",
-          title: "Open Party Loot",
-          icon: "fas fa-coins",
-          button: true,
-          onClick: () => new PartyLootApp().render(true),
-        },
-      ],
-    });
-  });
-
-  Hooks.once("canvasReady", () => {
-    ui.controls.render();
-  });
-
-  Hooks.on("renderSceneControls", (app, html, data) => {});
-
   // Keep the settings tab button as well
   Hooks.on("renderSidebarTab", (app, html) => {
     if (app.options.id !== "settings") return;
@@ -1412,4 +1386,46 @@ Hooks.once("ready", async () => {
     button.find("button").click(() => new PartyLootApp().render(true));
     html.find(".directory-footer").append(button);
   });
+});
+
+// Add the Party Loot button to scene controls as its own group
+Hooks.on("getSceneControlButtons", (controls) => {
+  controls.push({
+    name: "partyloot",
+    title: "Party Loot",
+    icon: "fas fa-coins",
+    layer: "controls",
+    visible: true,
+    tools: [
+      {
+        name: "open",
+        title: "Open Party Loot",
+        icon: "fas fa-coins",
+        button: true,
+        onClick: () => new PartyLootApp().render(true),
+      },
+    ],
+  });
+});
+
+Hooks.once("canvasReady", () => {
+  setTimeout(() => {
+    if (ui.controls) {
+      console.log("Party Loot: Refreshing scene controls");
+      ui.controls.render(true);
+    }
+  }, 100);
+});
+
+Hooks.on("renderSceneControls", (controls, html, data) => {
+  if (!html.find('[data-control="partyloot"]').length) {
+    setTimeout(() => {
+      console.log("Party Loot: Scene control missing, forcing refresh");
+      controls.render(true);
+    }, 50);
+  }
+});
+
+Hooks.once("setup", () => {
+  console.log("Party Loot: Module setup complete");
 });
