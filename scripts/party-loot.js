@@ -148,6 +148,9 @@ class PartyLootApp extends Application {
     html.find(".view-fund-history").click(this._onViewFundHistory.bind(this));
     html.find(".back-button").click(this._onBackToFunds.bind(this));
 
+    // Add fund history delete button listener
+    html.find(".delete-fund").click(this._onDeleteFundEntry.bind(this));
+
     // Items - Fix the add-item-button selector
     html.find(".add-item-button").click(this._onAddItem.bind(this));
     html.find(".toggle-details").click(this._onToggleDetails.bind(this));
@@ -172,6 +175,81 @@ class PartyLootApp extends Application {
 
     // Refresh button
     html.find(".refresh-data").click(this._onRefreshData.bind(this));
+  }
+
+  async _onDeleteFundEntry(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const fundId = event.currentTarget.dataset.id;
+
+    if (!fundId) {
+      ui.notifications.error("Invalid fund entry ID");
+      return;
+    }
+
+    // Find the fund entry to get its details for confirmation
+    const fundEntry = this.fundHistory.find((entry) => entry.id == fundId);
+    if (!fundEntry) {
+      ui.notifications.error("Fund entry not found");
+      return;
+    }
+
+    // Confirm deletion
+    const confirmDelete = await Dialog.confirm({
+      title: "Delete Fund Entry",
+      content: `<p>Are you sure you want to delete this fund entry?</p>
+              <p><strong>Description:</strong> ${fundEntry.desc}</p>
+              <p><strong>Amount:</strong> ${fundEntry.amount}</p>
+              <p><strong>Date:</strong> ${fundEntry.date}</p>`,
+      yes: () => true,
+      no: () => false,
+      defaultYes: false,
+    });
+
+    if (!confirmDelete) return;
+
+    try {
+      await this.deleteFundEntry(fundId);
+      ui.notifications.info("Fund entry deleted successfully!");
+
+      // Refresh data
+      await this.loadData();
+    } catch (error) {
+      console.error("Error deleting fund entry:", error);
+      ui.notifications.error("Failed to delete fund entry");
+    }
+  }
+
+  async deleteFundEntry(fundId) {
+    if (!this.apiUrl || !this.token) {
+      throw new Error("API URL and token must be configured in settings");
+    }
+
+    try {
+      const response = await fetch(
+        `${this.apiUrl}/api/funds/history/${fundId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Delete fund entry API error:", errorText);
+        throw new Error(
+          `Failed to delete fund entry: ${response.status} ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Delete fund entry error:", error);
+      throw error;
+    }
   }
 
   async _onAddFunds(event) {
@@ -1314,6 +1392,12 @@ Hooks.once("ready", async () => {
       ],
     });
   });
+
+  Hooks.once("canvasReady", () => {
+    ui.controls.render();
+  });
+
+  Hooks.on("renderSceneControls", (app, html, data) => {});
 
   // Keep the settings tab button as well
   Hooks.on("renderSidebarTab", (app, html) => {
