@@ -54,7 +54,9 @@ Before installing this module, you need:
 
 - **API URL**: `https://partylootapp.com` (default - don't change unless instructed)
 - **API Token**: Paste your API token from Step 1
-- **Campaign ID**: Enter your campaign ID from Party Loot (found in your campaign settings)
+
+![image](https://github.com/user-attachments/assets/33fa95d0-8b8e-4c6e-95a6-4f166492a97c)
+
 
 ### Step 3: Test the Connection
 
