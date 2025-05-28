@@ -13,28 +13,28 @@ h3 {
 }
 
 /* Make all placeholders white */
-::placeholder {
+.party-loot ::placeholder {
   color: #ffffff8f !important;
   opacity: 0.7;
 }
 
 /* For older browsers that use different pseudoelements */
-::-webkit-input-placeholder {
+.party-loot ::-webkit-input-placeholder {
   /* WebKit browsers */
   color: #ffffff8f !important;
   opacity: 0.7;
 }
-:-moz-placeholder {
+.party-loot :-moz-placeholder {
   /* Mozilla Firefox 4 to 18 */
   color: #ffffff8f !important;
   opacity: 0.7;
 }
-::-moz-placeholder {
+.party-loot ::-moz-placeholder {
   /* Mozilla Firefox 19+ */
   color: #ffffff8f !important;
   opacity: 0.7;
 }
-:-ms-input-placeholder {
+.party-loot :-ms-input-placeholder {
   /* Internet Explorer 10+ */
   color: #ffffff8f !important;
   opacity: 0.7;
@@ -68,11 +68,11 @@ button:hover {
   color: #cd7f32;
 }
 
-input {
+.party-loot input {
   color: #fff !important;
 }
 
-label {
+.party-loot label {
   font-size: 1rem;
 }
 
