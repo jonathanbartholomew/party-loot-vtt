@@ -1332,7 +1332,7 @@ Hooks.once("init", () => {
     name: "Campaign ID",
     hint: "Your Party Loot campaign ID",
     scope: "world",
-    config: true,
+    config: false,
     type: Number,
     default: 0,
   });
