@@ -1300,7 +1300,7 @@ Hooks.once("init", () => {
     scope: "world",
     config: true,
     type: String,
-    default: "https://test.partylootapp.com",
+    default: "https://partylootapp.com",
   });
 
   game.settings.register("party-loot", "apiToken", {
